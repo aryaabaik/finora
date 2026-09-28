@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Pengeluaran - Finora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <link rel="stylesheet" th:href="@{/css/pengeluaran.css}">
+</head>
+
+<body>
+    <div class="paper-texture"></div>
+
+
+    <div class="layout">
+        <!-- Mobile Header (shown only on mobile/tablet) -->
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+
+        <!-- Bottom Navigation (mobile only) -->
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+
+        <!-- Drawer Overlay -->
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+
+        <!-- Mobile Drawer -->
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+
+        <!-- Desktop Sidebar (hidden on mobile) -->
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <p class="annotation">CATATAN PENGELUARAN</p>
+                <h1>Tambah pengeluaran</h1>
+                <p class="subtitle">Catat ke mana uang Anda pergi.</p>
+                <span class="handwritten-note">uang keluar</span>
+            </div>
+
+            <div class="receipt-form-wrapper">
+                <div class="receipt-kraft-layer"></div>
+
+                <div class="create-decor-receipt-side"></div>
+
+                <div class="receipt-form">
+                    <div class="paper-clip">
+                        <div class="paper-clip-inner"></div>
+                    </div>
+
+                    <div class="receipt-header">
+                        <div class="receipt-header-brand">FINORA</div>
+                        <div class="receipt-header-title">Catatan Pengeluaran</div>
+                    </div>
+
+                    <form id="pengeluaranForm">
+                        <div class="form-group">
+                            <label for="tanggal">Tanggal</label>
+                            <input type="date" id="tanggal" name="tanggal" required>
+                        </div>
+
+                        <div class="amount-field-wrapper">
+                            <label for="jumlah">Jumlah</label>
+                            <div class="amount-input-group">
+                                <span class="amount-currency">Rp</span>
+                                <input type="number" id="jumlah" name="jumlah" placeholder="0" required min="0">
+                            </div>
+                        </div>
+
+                        <hr class="receipt-divider">
+
+                        <div class="form-group">
+                            <label for="kategori">Kategori</label>
+                            <select id="kategori" name="kategoriId" required>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="keterangan">Keterangan</label>
+                            <textarea id="keterangan" name="keterangan" rows="3" placeholder="Pengeluaran ini untuk apa?"></textarea>
+                        </div>
+
+                        <hr class="receipt-divider">
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Simpan pengeluaran</button>
+                            <a href="/pengeluaran/page" class="btn btn-secondary">Batal</a>
+                        </div>
+                    </form>
+
+                    <div id="formMessage" class="form-message" style="display: none;"></div>
+                </div>
+
+                <svg class="create-decor-botanical" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 90 Q52 70 48 50 Q44 30 50 10" stroke="#A87862" stroke-width="1" fill="none"/>
+                    <path d="M48 60 Q35 55 28 62" stroke="#A87862" stroke-width="0.8" fill="none"/>
+                    <ellipse cx="28" cy="62" rx="6" ry="3" stroke="#A87862" stroke-width="0.8" fill="none" transform="rotate(30 28 62)"/>
+                    <path d="M50 40 Q62 35 68 42" stroke="#A87862" stroke-width="0.8" fill="none"/>
+                    <ellipse cx="68" cy="42" rx="5" ry="2.5" stroke="#A87862" stroke-width="0.8" fill="none" transform="rotate(-25 68 42)"/>
+                </svg>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Insufficient Balance Modal -->
+    <div id="insufficientBalanceModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+        <div class="modal-container">
+            <button type="button" id="modalCloseBtn" class="modal-close" aria-label="Tutup popup">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal-icon-wrapper">
+                <div class="modal-icon">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 7.5L33.5 31H6.5L20 7.5Z" stroke="#A87862" stroke-width="1.6" stroke-linejoin="round"/>
+                        <line x1="20" y1="15.5" x2="20" y2="24" stroke="#A87862" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="20" cy="28.5" r="1.1" fill="#A87862"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Saldo Tidak Cukup</h2>
+            <p id="modalDesc" class="modal-description">Pengeluaran ini melebihi saldo yang tersedia.<br>Silakan masukkan jumlah yang lebih kecil.</p>
+            <button type="button" id="modalConfirmBtn" class="btn btn-primary modal-btn">Mengerti</button>
+        </div>
+    </div>
+
+    <script th:src="@{/js/navigation.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            var form = document.getElementById('pengeluaranForm');
+            var kategoriSelect = document.getElementById('kategori');
+            var messageEl = document.getElementById('formMessage');
+
+            try {
+                var response = await fetch('/kategori');
+                var categories = await response.json();
+                kategoriSelect.innerHTML = '<option value="">Pilih Kategori</option>';
+                categories.filter(function(cat) { return cat.jenis === 'PENGELUARAN'; }).forEach(function(cat) {
+                    var option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.nama;
+                    kategoriSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                messageEl.style.display = 'flex';
+                messageEl.textContent = 'Gagal memuat kategori. Coba lagi nanti.';
+            }
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                messageEl.style.display = 'none';
+                messageEl.textContent = '';
+
+                var tanggal = document.getElementById('tanggal').value;
+                var jumlah = document.getElementById('jumlah').value;
+                var keterangan = document.getElementById('keterangan').value;
+                var kategoriId = kategoriSelect.value;
+
+                if (!tanggal || !jumlah || !kategoriId) {
+                    messageEl.style.display = 'flex';
+                    messageEl.textContent = 'Mohon lengkapi semua field yang diperlukan.';
+                    return;
+                }
+
+                try {
+                    var response = await fetch('/pengeluaran', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tanggal: tanggal,
+                            jumlah: parseFloat(jumlah),
+                            keterangan: keterangan,
+                            kategori: { id: kategoriId }
+                        })
+                    });
+
+                    if (response.ok) {
+                        messageEl.style.display = 'flex';
+                        messageEl.textContent = 'Pengeluaran berhasil disimpan!';
+                        messageEl.style.backgroundColor = 'rgba(168, 120, 98, 0.1)';
+                        messageEl.style.borderColor = 'rgba(168, 120, 98, 0.3)';
+                        setTimeout(function() {
+                            window.location.href = '/pengeluaran/page';
+                        }, 1500);
+                    } else {
+                        var result = await response.text();
+
+                        if (result.includes('Saldo Anda tidak cukup')) {
+                            showModal('insufficientBalanceModal');
+                            return;
+                        }
+
+                        messageEl.style.display = 'flex';
+                        messageEl.textContent =
+                            result || 'Gagal menyimpan pengeluaran.';
+
+                        messageEl.style.backgroundColor =
+                            'rgba(168, 120, 98, 0.08)';
+
+                        messageEl.style.borderColor =
+                            'rgba(168, 120, 98, 0.3)';
+                    }
+                } catch (error) {
+                    console.error('Error saving expense:', error);
+                    messageEl.style.display = 'flex';
+                    messageEl.textContent = 'Koneksi gagal. Coba lagi nanti.';
+                    messageEl.style.backgroundColor = 'rgba(168, 120, 98, 0.08)';
+                    messageEl.style.borderColor = 'rgba(168, 120, 98, 0.3)';
+                }
+            });
+
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal').value = today;
+        });
+
+        // Modal functions
+        function showModal(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('is-visible');
+                document.body.classList.add('modal-open');
+                var closeBtn = modal.querySelector('.modal-close');
+                if (closeBtn) {
+                    closeBtn.focus();
+                }
+            }
+        }
+
+        function hideModal(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('is-visible');
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        // Attach close handler
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalConfirmBtn = document.getElementById('modalConfirmBtn');
+            var modalCloseBtn = document.getElementById('modalCloseBtn');
+
+            if (modalConfirmBtn) {
+                modalConfirmBtn.addEventListener('click', function() {
+                    hideModal('insufficientBalanceModal');
+                });
+            }
+
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', function() {
+                    hideModal('insufficientBalanceModal');
+                });
+            }
+
+            // Close on overlay click
+            var modalOverlay = document.getElementById('insufficientBalanceModal');
+            if (modalOverlay) {
+                modalOverlay.addEventListener('click', function(event) {
+                    if (event.target === modalOverlay) {
+                        hideModal('insufficientBalanceModal');
+                    }
+                });
+            }
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    hideModal('insufficientBalanceModal');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

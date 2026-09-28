@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategori - Finora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" th:href="@{/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <style>
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .annotation {
+            font-family: 'Caveat', cursive;
+            font-size: 13px;
+            color: var(--muted-blue-dark);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .page-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--ink-navy);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--warm-gray);
+            line-height: 1.6;
+        }
+
+        .kategori-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .kategori-section {
+            background: var(--cream-light);
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 6px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--kraft-dark);
+        }
+
+        .kategori-section.income {
+            background: var(--sage);
+            transform: rotate(-0.5deg);
+        }
+
+        .kategori-section.expense {
+            background: var(--cream-card);
+            transform: rotate(0.4deg);
+        }
+
+        .kategori-section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--ink-navy);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--kraft-dark);
+        }
+
+        .kategori-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .kategori-card {
+            background: var(--cream-light);
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--kraft-dark);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .kategori-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .kategori-card-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink-navy);
+            margin-bottom: 4px;
+        }
+
+        .kategori-card-jenis {
+            font-size: 11px;
+            font-family: 'Caveat', cursive;
+            color: var(--warm-gray);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            color: var(--warm-gray);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .add-kategori-section {
+            background: var(--cream-light);
+            padding: 28px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 6px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--kraft-dark);
+            transform: rotate(-0.3deg);
+        }
+
+        .add-kategori-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--ink-navy);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--ink-navy-light);
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--kraft-dark);
+            border-radius: 8px;
+            background: var(--cream);
+            font-size: 16px;
+            color: var(--charcoal);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s ease;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--ink-navy);
+            background: var(--ivory);
+            box-shadow: 0 0 0 3px rgba(26, 35, 50, 0.08);
+        }
+
+        .btn {
+            font-family: 'Inter', sans-serif;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--ink-navy);
+            color: var(--cream-light);
+        }
+
+        .btn-primary:hover {
+            background: var(--ink-navy-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 35, 50, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--ink-navy);
+            color: var(--cream-light);
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background: var(--olive-green);
+        }
+
+        .notification.error {
+            background: var(--terracotta);
+        }
+
+        @media (max-width: 768px) {
+            .kategori-sections {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .kategori-section.income,
+            .kategori-section.expense,
+            .add-kategori-section {
+                transform: none !important;
+            }
+
+            .page-header h1 {
+                font-size: clamp(24px, 6vw, 28px);
+            }
+
+            .notification {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="paper-texture"></div>
+
+    <div class="layout">
+        <!-- Mobile Header -->
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+
+        <!-- Bottom Navigation (mobile only) -->
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+
+        <!-- Drawer Overlay -->
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+
+        <!-- Mobile Drawer -->
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+
+        <!-- Desktop Sidebar -->
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <p class="annotation">FINORA — CATEGORY MANAGER</p>
+                <h1>Kategori</h1>
+                <p class="subtitle">Organize your money, one category at a time.</p>
+            </div>
+
+            <div class="kategori-sections">
+                <div class="kategori-section income">
+                    <h2 class="kategori-section-title">Pemasukan</h2>
+                    <div class="kategori-list" id="incomeKategoriList">
+                        <div class="empty-state">Loading...</div>
+                    </div>
+                </div>
+
+                <div class="kategori-section expense">
+                    <h2 class="kategori-section-title">Pengeluaran</h2>
+                    <div class="kategori-list" id="expenseKategoriList">
+                        <div class="empty-state">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="add-kategori-section">
+                <h2 class="add-kategori-title">Tambah Kategori</h2>
+                <form id="addKategoriForm">
+                    <div class="form-group">
+                        <label for="namaKategori">Nama Kategori</label>
+                        <input type="text" id="namaKategori" name="nama" placeholder="Contoh: Freelance, Gaji, Belanja" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jenisKategori">Jenis Kategori</label>
+                        <select id="jenisKategori" name="jenis" required>
+                            <option value="">Pilih jenis kategori</option>
+                            <option value="PEMASUKAN">Pemasukan</option>
+                            <option value="PENGELUARAN">Pengeluaran</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Simpan Kategori</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script th:src="@{/js/navigation.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const incomeListEl = document.getElementById('incomeKategoriList');
+            const expenseListEl = document.getElementById('expenseKategoriList');
+            const addKategoriForm = document.getElementById('addKategoriForm');
+            const notificationEl = document.getElementById('notification');
+
+            function showNotification(message, type = 'success') {
+                notificationEl.textContent = message;
+                notificationEl.className = 'notification show ' + type;
+                setTimeout(() => {
+                    notificationEl.classList.remove('show');
+                }, 3000);
+            }
+
+            async function loadKategori() {
+                try {
+                    const response = await fetch('/kategori');
+                    if (!response.ok) throw new Error('Failed to fetch kategori');
+
+                    const kategoriList = await response.json();
+
+                    const incomeKategori = kategoriList.filter(k => k.jenis === 'PEMASUKAN');
+                    const expenseKategori = kategoriList.filter(k => k.jenis === 'PENGELUARAN');
+
+                    // Render income categories
+                    if (incomeKategori.length === 0) {
+                        incomeListEl.innerHTML = '<div class="empty-state">Belum ada kategori pemasukan</div>';
+                    } else {
+                        incomeListEl.innerHTML = incomeKategori.map(k => `
+                            <div class="kategori-card">
+                                <div class="kategori-card-name">${k.nama}</div>
+                                <div class="kategori-card-jenis">income</div>
+                            </div>
+                        `).join('');
+                    }
+
+                    // Render expense categories
+                    if (expenseKategori.length === 0) {
+                        expenseListEl.innerHTML = '<div class="empty-state">Belum ada kategori pengeluaran</div>';
+                    } else {
+                        expenseListEl.innerHTML = expenseKategori.map(k => `
+                            <div class="kategori-card">
+                                <div class="kategori-card-name">${k.nama}</div>
+                                <div class="kategori-card-jenis">expense</div>
+                            </div>
+                        `).join('');
+                    }
+
+                } catch (error) {
+                    console.error('Error loading kategori:', error);
+                    incomeListEl.innerHTML = '<div class="empty-state">Gagal memuat kategori</div>';
+                    expenseListEl.innerHTML = '<div class="empty-state">Gagal memuat kategori</div>';
+                }
+            }
+
+            // Load kategori on page load
+            await loadKategori();
+
+            // Handle form submission
+            addKategoriForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const nama = document.getElementById('namaKategori').value.trim();
+                const jenis = document.getElementById('jenisKategori').value;
+
+                if (!nama || !jenis) {
+                    showNotification('Mohon isi semua field', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/kategori', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ nama, jenis })
+                    });
+
+                    if (!response.ok) throw new Error('Failed to save kategori');
+
+                    showNotification('Kategori berhasil ditambahkan', 'success');
+
+                    // Reset form
+                    addKategoriForm.reset();
+
+                    // Reload kategori list
+                    await loadKategori();
+
+                } catch (error) {
+                    console.error('Error saving kategori:', error);
+                    showNotification('Gagal menyimpan kategori', 'error');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

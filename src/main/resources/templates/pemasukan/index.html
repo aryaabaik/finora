@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemasukan - Finora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" th:href="@{/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <link rel="stylesheet" th:href="@{/css/pemasukan.css}">
+</head>
+
+<body>
+    <div class="paper-texture"></div>
+
+
+    <div class="layout">
+        <!-- Mobile Header (shown only on mobile/tablet) -->
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+
+        <!-- Bottom Navigation (mobile only) -->
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+
+        <!-- Drawer Overlay -->
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+
+        <!-- Mobile Drawer -->
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+
+        <!-- Desktop Sidebar (hidden on mobile) -->
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div class="index-page-header-actions">
+                    <div>
+                        <p class="annotation">FINORA — INCOME LEDGER</p>
+                        <h1>Your income ledger</h1>
+                        <p class="subtitle">A calm record of every source of money that comes in.</p>
+                    </div>
+                    <div class="header-action-btns">
+                        <a href="/pemasukan/create" class="btn btn-primary">+ Add income</a>
+                        <button class="btn btn-secondary" id="btnUseTemplate">Gunakan Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total-income-summary">
+                <p class="label">total income</p>
+                <div class="value">
+                    <span class="currency">Rp</span>
+                    <span id="totalIncomeValue">0</span>
+                </div>
+            </div>
+
+            <div class="filter-bar" id="filterBar">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filterCategory">Kategori</label>
+                        <select id="filterCategory">
+                            <option value="">Semua kategori</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterDate">Tanggal</label>
+                        <select id="filterDate">
+                            <option value="all">Semua tanggal</option>
+                            <option value="custom">Rentang tanggal</option>
+                        </select>
+                        <div class="date-inputs" id="dateInputs" style="display:none;">
+                            <input type="date" id="startDate" />
+                            <span class="date-separator">—</span>
+                            <input type="date" id="endDate" />
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterSort">Urutan</label>
+                        <select id="filterSort">
+                            <option value="terbaru">Terbaru</option>
+                            <option value="terlama">Terlama</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" id="btnApplyFilter">Terapkan</button>
+                        <button class="btn btn-secondary" id="btnResetFilter">Reset</button>
+                    </div>
+                </div>
+                <div class="active-filters" id="activeFilters" style="display:none;"></div>
+            </div>
+
+            <div class="income-list-container">
+                <div class="income-list-header">
+                    <span>Date</span>
+                    <span>Description</span>
+                    <span>Category</span>
+                    <span>Amount</span>
+                    <span></span>
+                </div>
+
+                <div class="income-list" id="incomeList">
+                    <!-- Income rows will be loaded here by JavaScript -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="templateModal">
+        <div class="modal-container" style="max-width:600px;width:100%;max-height:85vh;overflow-y:auto;">
+            <button class="modal-close" id="modalClose" aria-label="Close modal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div style="text-align:left;">
+                <p class="annotation" style="margin-bottom:4px;">TEMPLATE</p>
+                <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--ink-navy);margin:0 0 8px;letter-spacing:-0.3px;">Gunakan Template</h2>
+                <p style="font-size:14px;color:var(--warm-gray);margin:0 0 24px;line-height:1.6;">Pilih template yang ingin digunakan.</p>
+            </div>
+            <div id="templateModalBody">
+                <div style="text-align:center;padding:30px;color:var(--warm-gray);">
+                    <div style="opacity:1;pointer-events:none;">Loading templates...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/navigation.js}"></script>
+    <script>
+        let currentParams = { page: 0, size: 10, sort: 'terbaru', category: '', startDate: '', endDate: '' };
+        let allCategories = [];
+
+        async function loadCategories() {
+            try {
+                const res = await fetch('/kategori');
+                if (!res.ok) return;
+                const data = await res.json();
+                allCategories = data.filter(function(k) { return k.jenis === 'PEMASUKAN'; });
+                var sel = document.getElementById('filterCategory');
+                allCategories.forEach(function(cat) {
+                    var opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.textContent = cat.nama;
+                    sel.appendChild(opt);
+                });
+            } catch(e) { /* ignore */ }
+        }
+
+        function buildUrl(params) {
+            var urlParams = new URLSearchParams();
+            urlParams.set('page', params.page);
+            urlParams.set('size', params.size);
+            urlParams.set('sort', params.sort);
+            if (params.category) urlParams.set('category', params.category);
+            if (params.startDate) urlParams.set('startDate', params.startDate);
+            if (params.endDate) urlParams.set('endDate', params.endDate);
+            return '/pemasukan?' + urlParams.toString();
+        }
+
+        function formatIdr(value) {
+            return parseFloat(value || 0).toLocaleString('id-ID');
+        }
+
+        function getFilterValues() {
+            var cat = document.getElementById('filterCategory').value;
+            var dateMode = document.getElementById('filterDate').value;
+            var sort = document.getElementById('filterSort').value;
+            var start = document.getElementById('startDate').value;
+            var end = document.getElementById('endDate').value;
+            return {
+                page: 0,
+                size: currentParams.size,
+                sort: sort,
+                category: cat || '',
+                startDate: (dateMode === 'custom' && start) ? start : '',
+                endDate: (dateMode === 'custom' && end) ? end : ''
+            };
+        }
+
+        function setFilterValues(params) {
+            document.getElementById('filterCategory').value = params.category || '';
+            var hasDate = params.startDate || params.endDate;
+            document.getElementById('filterDate').value = hasDate ? 'custom' : 'all';
+            document.getElementById('dateInputs').style.display = hasDate ? 'flex' : 'none';
+            document.getElementById('startDate').value = params.startDate || '';
+            document.getElementById('endDate').value = params.endDate || '';
+            document.getElementById('filterSort').value = params.sort || 'terbaru';
+        }
+
+        function renderActiveFilters(params) {
+            var el = document.getElementById('activeFilters');
+            var chips = [];
+            var catName = '';
+            if (params.category) {
+                var found = allCategories.find(function(c) { return String(c.id) === params.category; });
+                catName = found ? found.nama : params.category;
+                chips.push('<span class="chip">Kategori: ' + catName + '</span>');
+            }
+            if (params.startDate && params.endDate) {
+                chips.push('<span class="chip">' + params.startDate + ' — ' + params.endDate + '</span>');
+            } else if (params.startDate) {
+                chips.push('<span class="chip">Dari: ' + params.startDate + '</span>');
+            } else if (params.endDate) {
+                chips.push('<span class="chip">Sampai: ' + params.endDate + '</span>');
+            }
+            if (params.sort) {
+                chips.push('<span class="chip">Urutan: ' + (params.sort === 'terbaru' ? 'Terbaru' : 'Terlama') + '</span>');
+            }
+            if (chips.length > 0) {
+                el.innerHTML = '<div class="chip-group">' + chips.join('') + '</div>';
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
+        }
+
+        async function loadIncome(params) {
+            var incomeListEl = document.getElementById('incomeList');
+            var totalIncomeValueEl = document.getElementById('totalIncomeValue');
+            var paginationEl = document.getElementById('paginationControls');
+            var url = buildUrl(params);
+
+            if (paginationEl) {
+                paginationEl.classList.add('loading');
+            }
+            incomeListEl.style.opacity = '0.5';
+            incomeListEl.style.pointerEvents = 'none';
+
+            try {
+                var response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch income data');
+                var data = await response.json();
+
+                incomeListEl.style.opacity = '1';
+                incomeListEl.style.pointerEvents = 'auto';
+                if (paginationEl) {
+                    paginationEl.classList.remove('loading');
+                }
+
+                totalIncomeValueEl.textContent = formatIdr(data.totalIncome);
+                var incomeData = data.content || [];
+
+                if (incomeData.length === 0) {
+                    incomeListEl.innerHTML = '<div class="empty-state"><p>No income recorded yet.</p><span>Start your income journal by adding your first entry.</span><a href="/pemasukan/create" class="btn btn-primary">Add income</a></div>';
+                } else {
+                    incomeListEl.innerHTML = '';
+                    incomeData.forEach(function(income) {
+                        var date = new Date(income.tanggal);
+                        var dateStr = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+                        var row = document.createElement('div');
+                        row.className = 'income-row';
+                        row.innerHTML = '<div class="income-date">' + dateStr + '</div>' +
+                            '<div class="income-description">' + (income.keterangan || '-') + '</div>' +
+                            '<div class="income-category">' + (income.kategori?.nama || 'Uncategorized') + '</div>' +
+                            '<div class="income-amount">+ Rp ' + formatIdr(income.jumlah) + '</div>' +
+                            '<div class="income-actions"><button class="delete-btn" data-id="' + income.id + '" aria-label="Delete income entry">Delete</button></div>';
+                        incomeListEl.appendChild(row);
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(function(btn) {
+                        btn.addEventListener('click', async function() {
+                            var id = this.getAttribute('data-id');
+                            if (confirm('Yakin ingin menghapus pemasukan ini?')) {
+                                try {
+                                    var deleteResponse = await fetch('/pemasukan/' + id, { method: 'DELETE' });
+                                    if (deleteResponse.ok) {
+                                        location.reload();
+                                    } else {
+                                        alert('Gagal menghapus pemasukan.');
+                                    }
+                                } catch (error) {
+                                    console.error('Error deleting income:', error);
+                                    alert('Koneksi gagal. Coba lagi nanti.');
+                                }
+                            }
+                        });
+                    });
+                }
+
+                renderPagination(data);
+                renderActiveFilters(params);
+            } catch (error) {
+                console.error('Error fetching income:', error);
+                incomeListEl.style.opacity = '1';
+                incomeListEl.style.pointerEvents = 'auto';
+                if (paginationEl) {
+                    paginationEl.classList.remove('loading');
+                }
+                incomeListEl.innerHTML = '<div class="empty-state"><p>Failed to load income data.</p><span>Please check your connection and try again.</span></div>';
+            }
+        }
+
+        function getPageNumbers(current, total) {
+            var pages = [];
+            var delta = 2;
+            var left = current - delta;
+            var right = current + delta + 1;
+            for (var i = 0; i < total; i++) {
+                if (i === 0 || i === total - 1 || (i >= left && i < right)) {
+                    pages.push(i);
+                } else if (pages[pages.length - 1] !== '...') {
+                    pages.push('...');
+                }
+            }
+            return pages;
+        }
+
+        function renderPagination(data) {
+            var paginationEl = document.getElementById('paginationControls');
+            if (!paginationEl) {
+                paginationEl = document.createElement('div');
+                paginationEl.id = 'paginationControls';
+                paginationEl.className = 'pagination-controls';
+                var listContainer = document.querySelector('.income-list-container');
+                listContainer.appendChild(paginationEl);
+            }
+
+            var totalPages = data.totalPages || 1;
+            var currentPage = data.currentPage || 0;
+
+            if (totalPages <= 1) {
+                paginationEl.innerHTML = '';
+                return;
+            }
+
+            var html = '';
+
+            var prevDisabled = currentPage === 0 ? 'disabled' : '';
+            html += '<button class="page-nav-btn ' + prevDisabled + '" data-page="' + (currentPage - 1) + '" aria-label="Sebelumnya">' +
+                '<span aria-hidden="true">&larr;</span> Sebelumnya</button>';
+
+            var pageNumbers = getPageNumbers(currentPage, totalPages);
+            pageNumbers.forEach(function(p) {
+                if (p === '...') {
+                    html += '<span class="page-ellipsis">...</span>';
+                } else {
+                    var isActive = p === currentPage ? 'active' : '';
+                    html += '<button class="page-btn ' + isActive + '" data-page="' + p + '" aria-label="Halaman ' + (p + 1) + '" aria-current="' + (p === currentPage ? 'page' : 'false') + '">' + (p + 1) + '</button>';
+                }
+            });
+
+            var nextDisabled = currentPage === totalPages - 1 ? 'disabled' : '';
+            html += '<button class="page-nav-btn ' + nextDisabled + '" data-page="' + (currentPage + 1) + '" aria-label="Berikutnya">' +
+                'Berikutnya <span aria-hidden="true">&rarr;</span></button>';
+
+            paginationEl.innerHTML = html;
+
+            paginationEl.querySelectorAll('.page-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var page = parseInt(this.getAttribute('data-page'));
+                    currentParams.page = page;
+                    loadIncome(currentParams);
+                });
+            });
+
+            paginationEl.querySelectorAll('.page-nav-btn:not([disabled])').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var page = parseInt(this.getAttribute('data-page'));
+                    currentParams.page = page;
+                    loadIncome(currentParams);
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCategories();
+            setFilterValues(currentParams);
+
+            document.getElementById('filterDate').addEventListener('change', function() {
+                document.getElementById('dateInputs').style.display = this.value === 'custom' ? 'flex' : 'none';
+            });
+
+            document.getElementById('btnApplyFilter').addEventListener('click', function() {
+                var vals = getFilterValues();
+                currentParams.category = vals.category;
+                currentParams.startDate = vals.startDate;
+                currentParams.endDate = vals.endDate;
+                currentParams.sort = vals.sort;
+                currentParams.page = 0;
+                setFilterValues(currentParams);
+                loadIncome(currentParams);
+            });
+
+            document.getElementById('btnResetFilter').addEventListener('click', function() {
+                currentParams = { page: 0, size: 10, sort: 'terbaru', category: '', startDate: '', endDate: '' };
+                setFilterValues(currentParams);
+                loadIncome(currentParams);
+            });
+
+            loadIncome(currentParams);
+
+            // Template Modal
+            const templateModal = document.getElementById('templateModal');
+            const modalCloseBtn = document.getElementById('modalClose');
+            const btnUseTemplate = document.getElementById('btnUseTemplate');
+            let isUsingTemplate = false;
+
+            function openTemplateModal() {
+                templateModal.classList.add('is-visible');
+                document.body.classList.add('modal-open');
+                loadTemplateList();
+            }
+
+            function closeTemplateModal() {
+                templateModal.classList.remove('is-visible');
+                document.body.classList.remove('modal-open');
+                isUsingTemplate = false;
+            }
+
+            btnUseTemplate.addEventListener('click', openTemplateModal);
+            modalCloseBtn.addEventListener('click', closeTemplateModal);
+            templateModal.addEventListener('click', function(e) {
+                if (e.target === templateModal) closeTemplateModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && templateModal.classList.contains('is-visible')) closeTemplateModal();
+            });
+
+            async function loadTemplateList() {
+                const body = document.getElementById('templateModalBody');
+                body.innerHTML = '<div style="text-align:center;padding:30px;color:var(--warm-gray);"><div style="opacity:1;pointer-events:none;">Loading templates...</div></div>';
+                try {
+                    var res = await fetch('/pemasukan/templates');
+                    if (!res.ok) throw new Error('Failed');
+                    var templates = await res.json();
+                    renderTemplateCards(templates);
+                } catch(e) {
+                    body.innerHTML = '<div style="text-align:center;padding:30px;color:var(--warm-gray);"><p>Gagal memuat template.</p></div>';
+                }
+            }
+
+            function renderTemplateCards(templates) {
+                var body = document.getElementById('templateModalBody');
+                if (!templates || templates.length === 0) {
+                    body.innerHTML =
+                        '<div style="text-align:center;padding:40px 20px;">' +
+                            '<p style="font-family:\'Cormorant Garamond\',serif;font-size:20px;margin-bottom:10px;color:var(--ink-navy);">Belum ada template</p>' +
+                            '<span style="font-size:14px;color:var(--warm-gray);display:block;margin-bottom:20px;">Template dapat digunakan untuk menambahkan beberapa transaksi sekaligus.</span>' +
+                            '<a href="/template/create" class="btn btn-primary">Buat Template</a>' +
+                        '</div>';
+                    return;
+                }
+
+                var html = '<div style="display:flex;flex-direction:column;gap:12px;">';
+                templates.forEach(function(tpl) {
+                    var total = tpl.items ? tpl.items.reduce(function(sum, item) { return sum + (item.jumlah || 0); }, 0) : 0;
+                    var itemCount = tpl.items ? tpl.items.length : 0;
+                    html += '<div class="template-modal-card" style="background:var(--ivory);border:1px solid rgba(217,197,165,0.3);border-radius:12px;padding:20px;position:relative;" data-template-card="' + tpl.id + '">';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">';
+                    html += '<div style="flex:1;min-width:0;">';
+                    html += '<h3 style="font-family:\'Cormorant Garamond\',serif;font-size:18px;font-weight:700;color:var(--ink-navy);margin:0 0 4px;">' + (tpl.nama || '-') + '</h3>';
+                    html += '<p style="font-size:12px;color:var(--warm-gray);margin:0 0 8px;">' + itemCount + ' item | Total Rp ' + formatIdr(total) + '</p>';
+                    html += '<div style="display:flex;flex-direction:column;gap:6px;">';
+                    if (tpl.items && tpl.items.length > 0) {
+                        tpl.items.forEach(function(item) {
+                            var itemId = item.id || 0;
+                            html += '<label style="font-size:13px;color:var(--charcoal);display:flex;gap:8px;align-items:center;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid transparent;transition:all 200ms ease;" class="template-item-row" data-template-id="' + tpl.id + '" data-item-id="' + itemId + '">' +
+                                '<input type="radio" name="item-' + tpl.id + '" value="' + itemId + '" class="item-radio" style="accent-color:var(--olive-green);">' +
+                                '<span style="flex:1;">' + (item.keterangan || '-') + '</span>' +
+                                '<span style="color:var(--warm-gray);font-size:11px;">' + (item.kategori || '-') + '</span>' +
+                                '<span style="font-weight:600;color:var(--sage-dark);">Rp ' + formatIdr(item.jumlah) + '</span>' +
+                            '</label>';
+                        });
+                    }
+                    html += '</div></div>';
+                    html += '<button class="btn btn-primary gunakan-btn" data-template-id="' + tpl.id + '" data-item-id="" style="margin-top:12px;padding:8px 20px;font-size:13px;min-height:38px;" disabled>Gunakan Item</button>';
+                    html += '</div></div>';
+                });
+                html += '</div>';
+                body.innerHTML = html;
+            }
+
+            var selectedItemId = null;
+            var selectedTemplateId = null;
+
+            document.getElementById('templateModalBody').addEventListener('change', function(e) {
+                if (e.target.classList.contains('item-radio')) {
+                    var card = e.target.closest('[data-template-card]');
+                    var templateId = card ? card.getAttribute('data-template-card') : null;
+                    var itemId = parseInt(e.target.value);
+                    selectedTemplateId = templateId;
+                    selectedItemId = itemId;
+                    var btn = document.querySelector('[data-template-id="' + templateId + '"].gunakan-btn');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.setAttribute('data-item-id', itemId);
+                    }
+                }
+            });
+
+            document.getElementById('templateModalBody').addEventListener('click', function(e) {
+                var btn = e.target.closest('[data-template-id]');
+                if (btn && btn.classList.contains('gunakan-btn')) {
+                    e.stopPropagation();
+                    var templateId = btn.getAttribute('data-template-id');
+                    var itemId = btn.getAttribute('data-item-id');
+                    if (!itemId || itemId === '') return;
+                    lakukanGunakan(templateId, itemId, btn);
+                }
+            });
+
+            async function lakukanGunakan(templateId, itemId, btnEl) {
+                if (isUsingTemplate) return;
+                isUsingTemplate = true;
+                btnEl.textContent = 'Memproses...';
+                btnEl.disabled = true;
+                try {
+                    var res = await fetch('/pemasukan/template/use/' + templateId + '/' + itemId, { method: 'POST' });
+                    if (!res.ok) {
+                        var errData = await res.json().catch(function(){});
+                        throw new Error(errData?.message || 'Gagal menggunakan item template');
+                    }
+                    closeTemplateModal();
+                    loadIncome(currentParams);
+                    var keterangan = '';
+                    try {
+                        var res2 = await fetch('/pemasukan/templates');
+                        if (res2.ok) {
+                            var tplData = await res2.json();
+                            var tpl = tplData.find(function(t) { return String(t.id) === String(templateId); });
+                            if (tpl && tpl.items) {
+                                var item = tpl.items.find(function(i) { return i.id === parseInt(itemId); });
+                                if (item) keterangan = item.keterangan;
+                            }
+                        }
+                    } catch(e) {}
+                    alert((keterangan || 'Item') + ' berhasil ditambahkan.');
+                } catch(e) {
+                    alert('Item template gagal digunakan. Silakan coba lagi.');
+                } finally {
+                    isUsingTemplate = false;
+                    var allBtns = document.querySelectorAll('.gunakan-btn');
+                    allBtns.forEach(function(b) {
+                        b.textContent = 'Gunakan Item';
+                        b.disabled = true;
+                        b.setAttribute('data-item-id', '');
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Template - Finora</title>
+    <link rel="stylesheet" th:href="@{/css/template.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+</head>
+<body>
+    <div class="paper-texture"></div>
+
+    <div class="layout">
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main-content">
+
+            <div class="form-wrapper">
+                <div class="form-card">
+                    <div class="form-header">
+                        <span class="annotation">EDIT TEMPLATE</span>
+                        <h1>Edit Template</h1>
+                    </div>
+
+                    <form th:action="@{/template/edit/{id}(id=${template.id})}" th:object="${template}" method="post">
+
+                        <div class="form-group">
+                            <label for="nama">Nama Template</label>
+                            <input type="text" id="nama" th:field="*{nama}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="jenis">Jenis Template</label>
+                            <select id="jenis" th:field="*{jenis}" required>
+                                <option value="">-- Pilih Jenis --</option>
+                                <option value="PEMASUKAN">Pemasukan</option>
+                                <option value="PENGELUARAN">Pengeluaran</option>
+                            </select>
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <label style="margin-bottom:14px;">Item Template</label>
+
+                        <select id="kategori-options-template" style="display: none;">
+                            <option value="">-- Pilih Kategori --</option>
+                            <option th:each="kategori : ${kategoriList}"
+                                    th:value="${kategori.id}"
+                                    th:text="${kategori.nama}"></option>
+                        </select>
+
+                        <div id="items-container" class="items-list">
+                            <div th:each="item, stat : ${template.items}" class="form-item">
+                                <div class="item-field">
+                                    <label>Keterangan</label>
+                                    <input type="text" th:name="'items[' + ${stat.index} + '].keterangan'" th:value="${item.keterangan}" required>
+                                </div>
+                                <div class="item-field">
+                                    <label>Kategori</label>
+                                    <select th:name="'items[' + ${stat.index} + '].kategori.id'" required>
+                                        <option th:each="kategori : ${kategoriList}"
+                                                th:value="${kategori.id}"
+                                                th:text="${kategori.nama}"
+                                                th:selected="${item.kategori != null && item.kategori.id == kategori.id}"></option>
+                                    </select>
+                                </div>
+                                <div class="item-field">
+                                    <label>Jumlah</label>
+                                    <input type="number" th:name="'items[' + ${stat.index} + '].jumlah'" th:value="${item.jumlah}" min="0" step="0.01" required>
+                                </div>
+                                <button type="button" class="remove-item-btn" onclick="hapusItem(this)">&#10005;</button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-add-item" onclick="tambahItem()">+ Tambah Item</button>
+
+                        <div class="form-actions">
+                            <a th:href="@{/template}" class="btn btn-secondary">Batal</a>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script th:src="@{/js/navigation.js}"></script>
+    <script>
+        let itemIndex = document.querySelectorAll(".form-item").length;
+
+        function tambahItem() {
+            const container = document.getElementById("items-container");
+            const item = document.createElement("div");
+            item.classList.add("form-item");
+            const kategoriOptions = document.getElementById("kategori-options-template").innerHTML;
+            item.innerHTML = `
+                <div class="item-field">
+                    <label>Keterangan</label>
+                    <input type="text" name="items[${itemIndex}].keterangan" placeholder="Contoh: Internet" required>
+                </div>
+                <div class="item-field">
+                    <label>Kategori</label>
+                    <select name="items[${itemIndex}].kategori.id" required>
+                        ${kategoriOptions}
+                    </select>
+                </div>
+                <div class="item-field">
+                    <label>Jumlah</label>
+                    <input type="number" name="items[${itemIndex}].jumlah" min="0" step="0.01" placeholder="300000" required>
+                </div>
+                <button type="button" class="remove-item-btn" onclick="hapusItem(this)">&#10005;</button>
+            `;
+            container.appendChild(item);
+            itemIndex++;
+        }
+
+        function hapusItem(button) {
+            const item = button.closest(".form-item");
+            const semuaItem = document.querySelectorAll(".form-item");
+            if (semuaItem.length > 1) {
+                item.remove();
+            }
+        }
+    </script>
+</body>
+</html>

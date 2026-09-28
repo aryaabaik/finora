@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Finora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Dashboard-specific styles -->
+    <link rel="stylesheet" th:href="@{/dashboard.css}">
+    <!-- Responsive Foundation + Navigation -->
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+</head>
+
+<body>
+    <!-- Paper Texture Overlay -->
+    <div class="paper-texture"></div>
+
+    <div class="layout">
+        <!-- Mobile Header (shown only on mobile/tablet) -->
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+
+        <!-- Bottom Navigation (mobile only) -->
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+
+        <!-- Drawer Overlay -->
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+
+        <!-- Mobile Drawer -->
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+
+        <!-- Desktop Sidebar (hidden on mobile) -->
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main">
+            <!-- Desktop Topbar -->
+            <header class="topbar desktop-only">
+                <div class="topbar-content">
+                    <div class="topbar-title">
+                        <h1>Ringkasan Keuangan</h1>
+                        <p class="subtitle">financial journal</p>
+                    </div>
+
+                    <div class="profile">
+                        <div class="profile-avatar">
+                            <img th:if="${user != null and user.foto != null and !user.foto.isEmpty()}"
+                                 th:src="@{'/uploads/profile/' + ${user.foto}}"
+                                 alt="Profile"
+                                 class="profile-avatar-img" />
+                            <span th:unless="${user != null and user.foto != null and !user.foto.isEmpty()}"
+                                  class="profile-avatar-initial"
+                                  th:text="${#strings.isEmpty(userName) ? 'U' : #strings.toUpperCase(#strings.substring(userName, 0, 1))}">U</span>
+                        </div>
+                        <div class="profile-info">
+                            <strong th:text="${userName} ?: 'User'">User</strong>
+                            <span>Personal Account</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Desktop Hero -->
+            <section class="hero desktop-only">
+                <svg class="botanical-decor" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M60 10 Q65 30 55 50 Q45 70 60 90" stroke="#4A6B8A" stroke-width="1.2" fill="none"/>
+                    <path d="M60 20 Q80 35 90 25" stroke="#4A6B8A" stroke-width="1" fill="none"/>
+                    <ellipse cx="90" cy="25" rx="8" ry="4" stroke="#4A6B8A" stroke-width="1" fill="none" transform="rotate(-30 90 25)"/>
+                    <path d="M60 35 Q40 50 30 40" stroke="#4A6B8A" stroke-width="1" fill="none"/>
+                    <ellipse cx="30" cy="40" rx="7" ry="3.5" stroke="#4A6B8A" stroke-width="1" fill="none" transform="rotate(40 30 40)"/>
+                    <path d="M55 55 Q75 65 85 55" stroke="#4A6B8A" stroke-width="1" fill="none"/>
+                    <ellipse cx="85" cy="55" rx="6" ry="3" stroke="#4A6B8A" stroke-width="1" fill="none" transform="rotate(-20 85 55)"/>
+                    <path d="M55 75 Q35 85 25 75" stroke="#4A6B8A" stroke-width="1" fill="none"/>
+                    <ellipse cx="25" cy="75" rx="7" ry="3.5" stroke="#4A6B8A" stroke-width="1" fill="none" transform="rotate(35 25 75)"/>
+                </svg>
+
+                <div class="silhouettes">
+                    <svg width="32" height="52" viewBox="0 0 32 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="16" cy="8" rx="6" ry="7" fill="#243447"/>
+                        <path d="M8 18 Q16 15 24 18 L26 42 L20 52 L12 52 L6 42 Z" fill="#243447"/>
+                    </svg>
+                    <svg width="32" height="58" viewBox="0 0 32 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="16" cy="7" rx="5" ry="6" fill="#1A2332"/>
+                        <path d="M9 16 Q16 14 23 16 L25 44 L19 58 L13 58 L7 44 Z" fill="#1A2332"/>
+                    </svg>
+                    <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="16" cy="7" rx="5.5" ry="6.5" fill="#243447"/>
+                        <path d="M7 17 Q16 14 25 17 L28 40 L22 50 L10 50 L4 40 Z" fill="#243447"/>
+                    </svg>
+                </div>
+
+                <svg class="dried-flower" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 28 L16 12" stroke="#B8924A" stroke-width="1.5"/>
+                    <circle cx="16" cy="10" r="4" stroke="#6B7F59" stroke-width="1.2" fill="none"/>
+                    <path d="M12 14 Q8 18 10 22" stroke="#B8924A" stroke-width="1" fill="none"/>
+                    <path d="M20 14 Q24 16 22 20" stroke="#6B7F59" stroke-width="1" fill="none"/>
+                </svg>
+
+                <div class="hero-content">
+                    <p class="hero-greeting">Selamat datang kembali</p>
+                    <h2 class="hero-title">
+                        Halo, <span th:text="${userName} ?: 'User'">User</span>.<br>
+                        <span class="accent">Your money, your story.</span>
+                    </h2>
+                    <p class="hero-description">
+                        Pantau pemasukan, pengeluaran, dan saldo kamu dalam satu tempat.
+                        Setiap rupiah punya cerita — mari tulis bersama.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Mobile Greeting - lightweight text, not card -->
+            <div class="mobile-greeting" th:if="${userName}">
+                <p class="mobile-greeting-text">Good morning,</p>
+                <h1 class="mobile-greeting-username" th:text="${userName}">User</h1>
+                <p class="mobile-greeting-tagline">Your financial journal, at a glance.</p>
+            </div>
+
+            <!-- Financial Overview: Balance, Income, Expense in one grid -->
+            <div class="financial-overview">
+                <section class="summary-grid">
+                    <div class="summary-card balance">
+                        <span class="balance-label">Saldo</span>
+                        <h2 class="balance-value">
+                            <span class="currency">Rp</span>
+                            <span th:text="${#numbers.formatInteger(laporan.saldo ?: 0, 1, 'POINT')}">0</span>
+                        </h2>
+                        <p class="balance-description">Saldo saat ini</p>
+                    </div>
+
+                    <div class="summary-card income">
+                        <span class="card-label">Pemasukan</span>
+                        <h3 class="card-value">
+                            <span class="currency">Rp</span>
+                            <span th:text="${#numbers.formatInteger(laporan.totalPemasukan ?: 0, 1, 'POINT')}">0</span>
+                        </h3>
+                        <p class="card-description">Total pemasukan</p>
+                    </div>
+
+                    <div class="summary-card expense">
+                        <span class="card-label">Pengeluaran</span>
+                        <h3 class="card-value">
+                            <span class="currency">Rp</span>
+                            <span th:text="${#numbers.formatInteger(laporan.totalPengeluaran ?: 0, 1, 'POINT')}">0</span>
+                        </h3>
+                        <p class="card-description">Total pengeluaran</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Chart + Actions -->
+            <div class="dashboard-content-wrapper">
+                <section class="middle-section">
+                    <div class="chart-panel">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Financial Flow</h3>
+                            <p class="chart-subtitle">Your money, over time.</p>
+                            <span class="chart-meta">Income vs Expense</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="financeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="actions-panel">
+                        <a href="/pemasukan/create" class="action-card">
+                            <span class="action-icon">+</span>
+                            <div class="action-content">
+                                <strong>Tambah Pemasukan</strong>
+                                <small>Catat uang masuk</small>
+                            </div>
+                        </a>
+
+                        <a href="/pengeluaran/create" class="action-card expense-action">
+                            <span class="action-icon">−</span>
+                            <div class="action-content">
+                                <strong>Tambah Pengeluaran</strong>
+                                <small>Catat uang keluar</small>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Profile Photo Modal Lightbox -->
+    <div class="profile-modal" id="profileModal" aria-hidden="true">
+        <div class="profile-modal-overlay" id="profileModalOverlay"></div>
+        <div class="profile-modal-content">
+            <button class="profile-modal-close" id="profileModalClose" aria-label="Close modal">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <!-- Animated Gradient Ring -->
+            <div class="profile-modal-ring">
+                <div class="profile-modal-ring-inner">
+                    <div class="profile-modal-img-container">
+                        <img src="" alt="Profile Photo Zoom" class="profile-modal-img" id="profileModalImg" />
+                    </div>
+                </div>
+            </div>
+            <!-- User Info Below Photo -->
+            <div class="profile-modal-info">
+                <span class="profile-modal-name" id="profileModalName" th:text="${userName} ?: 'User'">User</span>
+                <span class="profile-modal-badge">
+                    <span class="profile-modal-dot"></span>
+                    Personal Account
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script th:src="@{/js/navigation.js}"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var totalPemasukan = [[${laporan.totalPemasukan}]] || 0;
+            var totalPengeluaran = [[${laporan.totalPengeluaran}]] || 0;
+            var saldo = [[${laporan.saldo}]] || 0;
+
+            // Financial Flow Chart Data
+            var chartData = [[${laporan.chartData}]];
+            var labels = chartData && chartData.labels ? chartData.labels : [];
+            var incomeData = chartData && chartData.income ? chartData.income : [];
+            var expenseData = chartData && chartData.expense ? chartData.expense : [];
+            var balanceData = chartData && chartData.balance ? chartData.balance : [];
+
+            var ctx = document.getElementById('financeChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Pemasukan',
+                            data: incomeData,
+                            borderColor: '#6B7F59',
+                            backgroundColor: 'rgba(107, 127, 89, 0.08)',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#6B7F59',
+                            pointBorderColor: '#FFFCF5',
+                            pointBorderWidth: 2,
+                            pointHoverBackgroundColor: '#6B7F59',
+                            pointHoverBorderColor: '#FFFCF5',
+                            pointHoverBorderWidth: 3
+                        },
+                        {
+                            label: 'Pengeluaran',
+                            data: expenseData,
+                            borderColor: '#A85D3F',
+                            backgroundColor: 'rgba(168, 93, 63, 0.06)',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#A85D3F',
+                            pointBorderColor: '#FFFCF5',
+                            pointBorderWidth: 2,
+                            pointHoverBackgroundColor: '#A85D3F',
+                            pointHoverBorderColor: '#FFFCF5',
+                            pointHoverBorderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    animation: {
+                        duration: 1200,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 11,
+                                    weight: '500'
+                                },
+                                color: '#8A8680',
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 16,
+                                boxWidth: 8,
+                                boxHeight: 8
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(26, 35, 50, 0.95)',
+                            titleColor: '#FDF8F0',
+                            bodyColor: '#FDF8F0',
+                            borderColor: 'rgba(217, 197, 165, 0.3)',
+                            borderWidth: 1,
+                            padding: 14,
+                            displayColors: true,
+                            boxWidth: 10,
+                            boxHeight: 10,
+                            boxPadding: 6,
+                            cornerRadius: 8,
+                            titleFont: {
+                                family: "'Cormorant Garamond', serif",
+                                size: 14,
+                                weight: '600'
+                            },
+                            bodyFont: {
+                                family: "'Inter', sans-serif",
+                                size: 12,
+                                weight: '500'
+                            },
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    var label = context.dataset.label || '';
+                                    var value = context.raw || 0;
+                                    return label + ': Rp ' + Number(value).toLocaleString('id-ID');
+                                },
+                                afterBody: function(tooltipItems) {
+                                    var index = tooltipItems[0].dataIndex;
+                                    var balance = balanceData[index] || 0;
+                                    return '\nSaldo: Rp ' + Number(balance).toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 10,
+                                    weight: '500'
+                                },
+                                color: '#8A8680',
+                                padding: 8
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(217, 197, 165, 0.2)',
+                                drawBorder: false,
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 10,
+                                    weight: '500'
+                                },
+                                color: '#8A8680',
+                                padding: 8,
+                                callback: function(value) {
+                                    if (Math.abs(value) >= 1000000) {
+                                        return 'Rp ' + (value / 1000000).toFixed(1) + ' jt';
+                                    } else if (Math.abs(value) >= 1000) {
+                                        return 'Rp ' + (value / 1000).toFixed(0) + ' rb';
+                                    }
+                                    return 'Rp ' + Number(value).toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+
+
+            // Profile Photo Zoom Lightbox functionality
+            var profileAvatars = document.querySelectorAll('.profile-avatar-img, .mobile-profile-avatar-img');
+            var profileModal = document.getElementById('profileModal');
+            var profileModalImg = document.getElementById('profileModalImg');
+            var profileModalClose = document.getElementById('profileModalClose');
+            var profileModalOverlay = document.getElementById('profileModalOverlay');
+
+            function openProfileModal(src) {
+                if(!profileModal) return;
+                profileModalImg.src = src;
+                profileModal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // prevent scrolling
+            }
+
+            function closeProfileModal() {
+                if(!profileModal) return;
+                profileModal.classList.remove('active');
+                setTimeout(function() {
+                    profileModalImg.src = '';
+                }, 300); // wait for fade out
+                document.body.style.overflow = '';
+            }
+
+            if (profileAvatars.length > 0 && profileModal) {
+                profileAvatars.forEach(function(img) {
+                    img.style.cursor = 'pointer';
+                    img.title = 'Klik untuk memperbesar foto';
+                    img.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        openProfileModal(this.src);
+                    });
+                });
+
+                profileModalClose.addEventListener('click', closeProfileModal);
+                profileModalOverlay.addEventListener('click', closeProfileModal);
+
+                profileModal.addEventListener('click', function(e) {
+                    if (e.target === profileModal || e.target === document.querySelector('.profile-modal-content')) {
+                        closeProfileModal();
+                    }
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && profileModal.classList.contains('active')) {
+                        closeProfileModal();
+                    }
+                });
+            }
+
+        });
+    </script>
+
+</body>
+</html>

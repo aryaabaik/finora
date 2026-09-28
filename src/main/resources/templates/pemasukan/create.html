@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Pemasukan - Finora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" th:href="@{/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <link rel="stylesheet" th:href="@{/css/pemasukan.css}">
+</head>
+
+<body>
+    <div class="paper-texture"></div>
+
+
+    <div class="layout">
+        <!-- Mobile Header (shown only on mobile/tablet) -->
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+
+        <!-- Bottom Navigation (mobile only) -->
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+
+        <!-- Drawer Overlay -->
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+
+        <!-- Mobile Drawer -->
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+
+        <!-- Desktop Sidebar (hidden on mobile) -->
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <p class="annotation">INCOME LEDGER</p>
+                <h1>Write down today's gain.</h1>
+                <p class="subtitle">Keep every source of income clear and accounted for.</p>
+            </div>
+
+            <div class="create-form-card">
+                <svg class="create-page-decor-top-right" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M60 10 Q65 30 55 50 Q45 70 60 90" stroke="#6B8CAE" stroke-width="1.2" fill="none"/>
+                    <path d="M60 20 Q80 35 90 25" stroke="#6B8CAE" stroke-width="1" fill="none"/>
+                    <ellipse cx="90" cy="25" rx="8" ry="4" stroke="#6B8CAE" stroke-width="1" fill="none" transform="rotate(-30 90 25)"/>
+                </svg>
+
+                <form id="incomeForm">
+                    <div class="form-group">
+                        <label for="tanggal">Tanggal</label>
+                        <input type="date" id="tanggal" name="tanggal" required>
+                    </div>
+
+                    <div class="form-group amount-field-wrapper">
+                        <label for="jumlah">Amount</label>
+                        <div class="amount-input-group">
+                            <span class="amount-currency">Rp</span>
+                            <input type="number" id="jumlah" name="jumlah" placeholder="0" required min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kategori">Kategori</label>
+                        <select id="kategori" name="kategoriId" required>
+                            <!-- Categories will be loaded here by JavaScript -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keterangan">Keterangan</label>
+                        <textarea id="keterangan" name="keterangan" rows="3" placeholder="Contoh: Gaji bulanan, penjualan barang, dll."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Income</button>
+                        <a href="/pemasukan/page" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+
+                <div id="formMessage" class="form-message" style="display: none;"></div>
+            </div>
+        </main>
+
+    </div>
+
+    <script th:src="@{/js/navigation.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const form = document.getElementById('incomeForm');
+            const kategoriSelect = document.getElementById('kategori');
+            const messageEl = document.getElementById('formMessage');
+
+            // Fetch categories
+            try {
+                const response = await fetch('/kategori');
+                const categories = await response.json();
+                kategoriSelect.innerHTML = '<option value="">Pilih Kategori</option>';
+                categories.filter(cat => cat.jenis === 'PEMASUKAN').forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.nama;
+                    kategoriSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                messageEl.style.display = 'block';
+                messageEl.textContent = 'Gagal memuat kategori. Coba lagi nanti.';
+            }
+
+            // Handle form submission
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                messageEl.style.display = 'none';
+                messageEl.textContent = '';
+
+                const tanggal = document.getElementById('tanggal').value;
+                const jumlah = document.getElementById('jumlah').value;
+                const keterangan = document.getElementById('keterangan').value;
+                const kategoriId = kategoriSelect.value;
+
+                if (!tanggal || !jumlah || !kategoriId) {
+                    messageEl.style.display = 'block';
+                    messageEl.textContent = 'Mohon lengkapi semua field yang diperlukan.';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/pemasukan', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tanggal: tanggal,
+                            jumlah: parseFloat(jumlah),
+                            keterangan: keterangan,
+                            kategori: { id: kategoriId }
+                        })
+                    });
+
+                    const result = await response.json(); // Assuming backend returns JSON even for success
+
+                    if (response.ok) {
+                        messageEl.style.display = 'block';
+                        messageEl.textContent = 'Pemasukan berhasil disimpan!';
+                        messageEl.style.backgroundColor = 'rgba(107, 127, 89, 0.15)';
+                        messageEl.style.borderColor = 'rgba(107, 127, 89, 0.4)';
+                        setTimeout(() => {
+                            window.location.href = '/pemasukan/page';
+                        }, 1500);
+                    } else {
+                        messageEl.style.display = 'block';
+                        messageEl.textContent = result.message || 'Gagal menyimpan pemasukan.';
+                        messageEl.style.backgroundColor = 'rgba(168, 93, 63, 0.1)';
+                        messageEl.style.borderColor = 'rgba(168, 93, 63, 0.4)';
+                    }
+                } catch (error) {
+                    console.error('Error saving income:', error);
+                    messageEl.style.display = 'block';
+                    messageEl.textContent = 'Koneksi gagal. Coba lagi nanti.';
+                    messageEl.style.backgroundColor = 'rgba(168, 93, 63, 0.1)';
+                    messageEl.style.borderColor = 'rgba(168, 93, 63, 0.4)';
+                }
+            });
+
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal').value = today;
+        });
+    </script>
+
+</body>
+
+</html>

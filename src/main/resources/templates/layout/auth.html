@@ -1,0 +1,108 @@
+```html
+<!DOCTYPE html>
+<html lang="id"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Finora - Auth</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ivory: {
+                            100: '#FBF8F1',
+                            200: '#F5F1E6'
+                        },
+                        navy: {
+                            900: '#17294A',
+                            700: '#233A63'
+                        },
+                        gold: {
+                            600: '#B08D2F',
+                            400: '#D9C08A'
+                        },
+                        ink: {
+                            700: '#4A4A46',
+                            400: '#9A958B'
+                        },
+                        border: '#E6DFCE',
+                        danger: '#B03A3A',
+                        white: '#FFFFFF'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body class="bg-ivory-100">
+
+<div class="flex min-h-screen">
+
+    <!-- LEFT SIDE -->
+    <div class="hidden lg:flex lg:w-1/2 bg-ivory-100 items-center justify-center p-12">
+
+        <!--
+            Tidak menggunakan fragments/brand-panel.
+            Konten kiri bisa langsung ditulis di sini.
+        -->
+
+        <div class="w-full max-w-lg">
+
+            <div class="mb-8">
+                <span class="text-sm font-semibold tracking-[0.25em] text-gold-600 uppercase">
+                    FINORA
+                </span>
+            </div>
+
+            <h1 class="font-['Playfair_Display'] text-5xl font-semibold leading-tight text-navy-900">
+                Kelola keuanganmu
+                <span class="text-gold-600">dengan lebih baik.</span>
+            </h1>
+
+            <p class="mt-6 max-w-md text-base leading-7 text-ink-400">
+                Atur pemasukan, pengeluaran, dan rencana keuangan
+                dalam satu tempat yang sederhana dan terorganisir.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+    <div class="w-full lg:w-1/2 bg-ivory-200 flex items-center justify-center p-8 lg:p-12">
+
+        <div class="w-full max-w-[440px]">
+
+            <!-- Isi login/register masuk ke sini -->
+            <div layout:fragment="content"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script th:src="@{/js/password-toggle.js}"></script>
+
+</body>
+</html>
+```

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Keuangan - Finora</title>
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <link rel="stylesheet" th:href="@{/css/laporan.css}">
+</head>
+
+<body>
+    <div class="paper-texture"></div>
+
+    <div class="layout">
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main-content">
+
+            <!-- Header -->
+            <div class="page-header">
+                <div class="header-meta">
+                    <span class="annotation">LAPORAN KEUANGAN</span>
+                    <span class="gold-line"></span>
+                </div>
+                <h1>Laporan Keuangan</h1>
+                <p class="subtitle">Memahami bagaimana uang masuk, digunakan, dan tersisa pada periode tertentu.</p>
+            </div>
+
+            <!-- Filter -->
+            <form th:action="@{/laporan}" method="get" class="filter-section">
+                <div class="select-group">
+                    <label for="month">Bulan</label>
+                    <select id="month" name="month" class="form-select">
+                        <option th:each="m, stat : ${ {'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'} }"
+                                th:value="${stat.count}"
+                                th:text="${m}"
+                                th:selected="${stat.count == selectedMonth}"></option>
+                    </select>
+                </div>
+                <div class="select-group">
+                    <label for="year">Tahun</label>
+                    <select id="year" name="year" class="form-select">
+                        <option th:each="i : ${#numbers.sequence(selectedYear - 5, selectedYear)}"
+                                th:value="${i}"
+                                th:text="${i}"
+                                th:selected="${i == selectedYear}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-filter">Terapkan</button>
+                <span class="period-info" th:text="'Periode: Bulan ' + ${selectedMonth} + ' / ' + ${selectedYear}"></span>
+            </form>
+
+            <!-- Summary -->
+            <div class="summary-row">
+                <div class="summary-card">
+                    <span class="summary-label">Total Pemasukan</span>
+                    <span class="summary-value income">Rp <span th:text="${reportData != null and reportData.totalPemasukan != null ? #numbers.formatInteger(reportData.totalPemasukan, 1, 'POINT') : '0'}">0</span></span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Total Pengeluaran</span>
+                    <span class="summary-value expense">Rp <span th:text="${reportData != null and reportData.totalPengeluaran != null ? #numbers.formatInteger(reportData.totalPengeluaran, 1, 'POINT') : '0'}">0</span></span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Saldo Bersih</span>
+                    <span class="summary-value balance" th:classappend="${reportData != null and reportData.saldo != null and reportData.saldo.signum() < 0 ? ' negative' : ''}">Rp <span th:text="${reportData != null and reportData.saldo != null ? #numbers.formatInteger(reportData.saldo, 1, 'POINT') : '0'}">0</span></span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Rasio</span>
+                    <span class="summary-value ratio">
+                        <span th:text="${(reportData != null and reportData.rasioFormatted != null) ? reportData.rasioFormatted : '0'}">0</span>%
+                    </span>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-story-card" th:if="${#lists.isEmpty(reportData['pemasukan']) and #lists.isEmpty(reportData['pengeluaran'])}">
+                <div class="empty-story-annotation">LAPORAN</div>
+                <h2 class="empty-story-title">Tidak ada data pada periode ini</h2>
+                <p class="empty-story-subtitle">Silakan pilih periode lain atau tambahkan transaksi pemasukan dan pengeluaran.</p>
+                <div class="empty-story-actions">
+                    <a th:href="@{/pemasukan/page}" class="btn btn-primary">Tambah Pemasukan</a>
+                    <a th:href="@{/pengeluaran/page}" class="btn btn-secondary">Tambah Pengeluaran</a>
+                </div>
+            </div>
+
+            <!-- Report Content -->
+            <div class="report-content" th:if="${not #lists.isEmpty(reportData['pemasukan']) or not #lists.isEmpty(reportData['pengeluaran'])}">
+
+                <!-- Arus Keuangan Chart -->
+                <section class="report-section chart-section">
+                    <div class="chart-card large-chart">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Arus Keuangan</h3>
+                            <p class="chart-subtitle">Tren pemasukan dan pengeluaran sepanjang tahun</p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="cashFlowChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pengeluaran Kategori + Sumber Pemasukan -->
+                <section class="report-section category-section">
+                    <div class="two-column-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Distribusi Pengeluaran</h3>
+                                <p class="chart-subtitle">Pengeluaran berdasarkan kategori</p>
+                            </div>
+                            <ul class="cat-bar-list" th:if="${reportData != null and not #lists.isEmpty(reportData['kategoriBreakdown'])}">
+                                <li th:each="kategori : ${reportData['kategoriBreakdown']}">
+                                    <div class="cat-bar-info">
+                                        <span class="cat-bar-name" th:text="${kategori.nama}">Kategori</span>
+                                        <div class="cat-bar-amount-wrapper">
+                                            <span class="cat-bar-pct" th:text="${kategori.persentase + '%'}">0%</span>
+                                            <span class="cat-bar-amount" th:text="${'Rp ' + #numbers.formatInteger(kategori.jumlah, 1, 'POINT')}">Rp 0</span>
+                                        </div>
+                                    </div>
+                                    <div class="cat-bar-track">
+                                        <div class="cat-bar-fill" th:style="${'width: ' + (kategori.persentase != null ? kategori.persentase : 0) + '%'}"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <p class="no-data" th:if="${reportData == null or #lists.isEmpty(reportData['kategoriBreakdown'])}">Belum ada pengeluaran pada periode ini</p>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Sumber Pemasukan</h3>
+                                <p class="chart-subtitle">Asal pemasukan berdasarkan kategori</p>
+                            </div>
+                            <ul class="cat-bar-list income-list" th:if="${reportData != null and not #lists.isEmpty(reportData['pemasukanBreakdown'])}">
+                                <li th:each="item : ${reportData['pemasukanBreakdown']}">
+                                    <div class="cat-bar-info">
+                                        <span class="cat-bar-name" th:text="${item.nama}">Kategori</span>
+                                        <div class="cat-bar-amount-wrapper">
+                                            <span class="cat-bar-pct" th:text="${item.persentase + '%'}">0%</span>
+                                            <span class="cat-bar-amount" th:text="${'Rp ' + #numbers.formatInteger(item.jumlah, 1, 'POINT')}">Rp 0</span>
+                                        </div>
+                                    </div>
+                                    <div class="cat-bar-track">
+                                        <div class="cat-bar-fill" th:style="${'width: ' + (item.persentase != null ? item.persentase : 0) + '%'}"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <p class="no-data" th:if="${reportData == null or #lists.isEmpty(reportData['pemasukanBreakdown'])}">Belum ada pemasukan pada periode ini</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Insight -->
+                <section class="report-section">
+                    <div class="insight-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Ringkasan Periode</h3>
+                            <p class="chart-subtitle">Insight utama performa keuangan bulan ini</p>
+                        </div>
+                        <div class="insight-grid">
+                            <div class="insight-item expense" th:if="${reportData != null and not #lists.isEmpty(reportData['kategoriBreakdown'])}">
+                                <div class="insight-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                                        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                                    </svg>
+                                </div>
+                                <div class="insight-content">
+                                    <span class="insight-label">Kategori Pengeluaran</span>
+                                    <span class="insight-val" th:text="${#lists.size(reportData['kategoriBreakdown']) + ' Kategori Aktif'}">0 Kategori</span>
+                                </div>
+                            </div>
+                            <div class="insight-item ratio" th:if="${reportData != null and reportData.totalPemasukan != null and reportData.totalPemasukan.compareTo(T(java.math.BigDecimal).ZERO) != 0}">
+                                <div class="insight-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="19" y1="5" x2="5" y2="19"></line>
+                                        <circle cx="6.5" cy="6.5" r="2.5"></circle>
+                                        <circle cx="17.5" cy="17.5" r="2.5"></circle>
+                                    </svg>
+                                </div>
+                                <div class="insight-content">
+                                    <span class="insight-label">Rasio Pengeluaran</span>
+                                    <span class="insight-val" th:text="${(reportData.rasioFormatted ?: '0') + '% dari Pemasukan'}">0% dari Pemasukan</span>
+                                </div>
+                            </div>
+                            <div class="insight-item income" th:if="${reportData != null and reportData.saldo != null and reportData.saldo.signum() >= 0}">
+                                <div class="insight-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                        <polyline points="17 6 23 6 23 12"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="insight-content">
+                                    <span class="insight-label">Kondisi Saldo</span>
+                                    <span class="insight-val">Surplus (+Rp <span th:text="${#numbers.formatInteger(reportData.saldo, 1, 'POINT')}">0</span>)</span>
+                                </div>
+                            </div>
+                            <div class="insight-item expense" th:if="${reportData != null and reportData.saldo != null and reportData.saldo.signum() < 0}">
+                                <div class="insight-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                        <polyline points="17 18 23 18 23 12"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="insight-content">
+                                    <span class="insight-label">Kondisi Saldo</span>
+                                    <span class="insight-val">Defisit (-Rp <span th:text="${#numbers.formatInteger(reportData.saldo.negate(), 1, 'POINT')}">0</span>)</span>
+                                </div>
+                            </div>
+                            <div class="insight-item" th:if="${not #lists.isEmpty(reportData['pemasukan']) or not #lists.isEmpty(reportData['pengeluaran'])}">
+                                <div class="insight-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    </svg>
+                                </div>
+                                <div class="insight-content">
+                                    <span class="insight-label">Aktivitas Transaksi</span>
+                                    <span class="insight-val" th:text="${(#lists.size(reportData['pemasukan']) + #lists.size(reportData['pengeluaran'])) + ' Transaksi'}">0 Transaksi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Detail Pemasukan -->
+                <section class="report-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Detail Pemasukan</h3>
+                            <p class="chart-subtitle">Daftar transaksi uang masuk pada periode ini</p>
+                        </div>
+                        <div class="transaction-table-wrapper">
+                            <table class="transaction-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Kategori</th>
+                                        <th>Keterangan</th>
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${reportData['pemasukan']}">
+                                        <td th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</td>
+                                        <td th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</td>
+                                        <td th:text="${item.keterangan ?: '-'}">-</td>
+                                        <td class="text-income">Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(reportData['pemasukan'])}">
+                                        <td colspan="4" class="empty-table-cell">Belum ada transaksi pemasukan pada periode ini</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Detail Pengeluaran -->
+                <section class="report-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Detail Pengeluaran</h3>
+                            <p class="chart-subtitle">Daftar transaksi uang keluar pada periode ini</p>
+                        </div>
+                        <div class="transaction-table-wrapper">
+                            <table class="transaction-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Kategori</th>
+                                        <th>Keterangan</th>
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${reportData['pengeluaran']}">
+                                        <td th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</td>
+                                        <td th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</td>
+                                        <td th:text="${item.keterangan ?: '-'}">-</td>
+                                        <td class="text-expense">Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(reportData['pengeluaran'])}">
+                                        <td colspan="4" class="empty-table-cell">Belum ada transaksi pengeluaran pada periode ini</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Closing -->
+            <div class="closing-section" th:if="${not #lists.isEmpty(reportData['pemasukan']) or not #lists.isEmpty(reportData['pengeluaran'])}">
+                <p class="closing-quote">"Setiap angka memiliki cerita."</p>
+                <div class="closing-brand">FINORA</div>
+                <div class="closing-subtitle">Financial Journal & Analytics</div>
+            </div>
+
+        </main>
+    </div>
+
+    <script th:src="@{/js/navigation.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var chartLabels = /*[[${reportData != null and reportData.chartData != null ? reportData.chartData.labels : {}}]]*/ [];
+        var chartIncome = /*[[${reportData != null and reportData.chartData != null ? reportData.chartData.income : {}}]]*/ [];
+        var chartExpense = /*[[${reportData != null and reportData.chartData != null ? reportData.chartData.expense : {}}]]*/ [];
+        var chartBalance = /*[[${reportData != null and reportData.chartData != null ? reportData.chartData.balance : {}}]]*/ [];
+        /*]]>*/
+
+        function renderCashFlowChart() {
+            var canvas = document.getElementById('cashFlowChart');
+            if (!canvas) return;
+            var labels = Array.isArray(chartLabels) ? chartLabels : [];
+            var income = Array.isArray(chartIncome) ? chartIncome.map(Number) : [];
+            var expense = Array.isArray(chartExpense) ? chartExpense.map(Number) : [];
+            var balance = Array.isArray(chartBalance) ? chartBalance.map(Number) : [];
+
+            var container = canvas.parentElement;
+            var w = container.clientWidth || 600;
+            var h = 300;
+            var dpr = window.devicePixelRatio || 1;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+
+            var ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            if (labels.length === 0) {
+                ctx.fillStyle = '#8A8680';
+                ctx.font = '13px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Tidak ada data arus kas untuk ditampilkan', w / 2, h / 2);
+                return;
+            }
+
+            var pad = { top: 25, right: 20, bottom: 45, left: 65 };
+            var cw = w - pad.left - pad.right;
+            var ch = h - pad.top - pad.bottom;
+            var allVals = income.concat(expense).concat([100000]);
+            var maxVal = Math.ceil(Math.max.apply(null, allVals) / 500000) * 500000 || 1000000;
+            var barGroupW = cw / labels.length;
+            var barW = Math.max(6, Math.min(14, barGroupW * 0.28));
+
+            // Grid lines and Y axis
+            for (var i = 0; i <= 4; i++) {
+                var y = pad.top + ch - (ch * i / 4);
+                ctx.strokeStyle = 'rgba(217, 197, 165, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash(i === 0 ? [] : [4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(pad.left, y);
+                ctx.lineTo(w - pad.right, y);
+                ctx.stroke();
+
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#8A8680';
+                ctx.font = '500 10.5px Inter, sans-serif';
+                ctx.textAlign = 'right';
+                var valLabel = (maxVal * i / 4);
+                var formatted = valLabel >= 1000000 ? (valLabel / 1000000).toFixed(1) + ' jt' : (valLabel / 1000).toFixed(0) + ' rb';
+                if (valLabel === 0) formatted = '0';
+                ctx.fillText('Rp ' + formatted, pad.left - 8, y + 3.5);
+            }
+
+            // Draw bars
+            labels.forEach(function(label, idx) {
+                var cx = pad.left + idx * barGroupW + barGroupW / 2;
+                var incH = (income[idx] || 0) / maxVal * ch;
+                var expH = (expense[idx] || 0) / maxVal * ch;
+
+                // Income bar
+                if (incH > 0) {
+                    ctx.fillStyle = '#52794A';
+                    ctx.beginPath();
+                    ctx.roundRect(cx - barW - 2, pad.top + ch - incH, barW, incH, [3, 3, 0, 0]);
+                    ctx.fill();
+                }
+
+                // Expense bar
+                if (expH > 0) {
+                    ctx.fillStyle = '#B35436';
+                    ctx.beginPath();
+                    ctx.roundRect(cx + 2, pad.top + ch - expH, barW, expH, [3, 3, 0, 0]);
+                    ctx.fill();
+                }
+
+                // Month Label
+                ctx.fillStyle = '#1A2332';
+                ctx.font = '500 10.5px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(label.substring(0, 3), cx, h - pad.bottom + 18);
+            });
+
+            // Legend on bottom
+            var legendY = h - 10;
+            ctx.fillStyle = '#52794A';
+            ctx.beginPath();
+            ctx.arc(pad.left + 6, legendY - 3.5, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#1A2332';
+            ctx.font = '600 11px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('Pemasukan', pad.left + 14, legendY);
+
+            ctx.fillStyle = '#B35436';
+            ctx.beginPath();
+            ctx.arc(pad.left + 110, legendY - 3.5, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#1A2332';
+            ctx.font = '600 11px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('Pengeluaran', pad.left + 118, legendY);
+        }
+
+        window.addEventListener('load', renderCashFlowChart);
+        window.addEventListener('resize', renderCashFlowChart);
+    </script>
+</body>
+</html>

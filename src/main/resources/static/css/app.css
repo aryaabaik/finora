@@ -1,0 +1,45 @@
+:root {
+    --ivory-100: #FBF8F1;
+    --ivory-200: #F5F1E6;
+    --navy-900: #17294A;
+    --navy-700: #233A63;
+    --gold-600: #B08D2F;
+    --gold-400: #D9C08A;
+    --ink-700: #4A4A46;
+    --ink-400: #9A958B;
+    --white: #FFFFFF;
+    --border: #E6DFCE;
+    --danger: #B03A3A;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--ivory-100);
+    min-height: 100vh;
+}
+
+.font-display {
+    font-family: 'Playfair Display', serif;
+}
+
+:focus-visible {
+    outline: 2px solid var(--gold-600);
+    outline-offset: 2px;
+}
+
+.border-danger {
+    border-color: var(--danger) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template - Finora</title>
+    <link rel="stylesheet" th:href="@{/css/template.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+</head>
+<body>
+    <div class="paper-texture"></div>
+
+    <div class="layout">
+        <div th:replace="fragments/navigation :: mobile-header"></div>
+        <div th:replace="fragments/navigation :: bottom-nav"></div>
+        <div th:replace="fragments/navigation :: drawer-overlay"></div>
+        <nav th:replace="fragments/navigation :: drawer"></nav>
+        <aside th:replace="fragments/navigation :: sidebar"></aside>
+
+        <main class="main-content">
+
+            <div class="page-header">
+                <div class="header-info">
+                    <span class="annotation">TEMPLATE</span>
+                    <h1>Template</h1>
+                    <p class="subtitle">Gunakan kembali transaksi yang sering kamu buat.</p>
+                </div>
+                <a th:href="@{/template/create}" class="btn btn-primary">+ Buat Template</a>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(templates)}" class="empty-state-container">
+                <div class="empty-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </div>
+                <h2>Belum ada template</h2>
+                <p>Buat template untuk menyimpan transaksi yang sering kamu gunakan agar lebih cepat dicatat.</p>
+                <a th:href="@{/template/create}" class="btn btn-primary">+ Buat Template</a>
+            </div>
+
+            <!-- Template List -->
+            <div th:if="${not #lists.isEmpty(templates)}" class="template-list-container">
+                <div th:each="template : ${templates}" class="template-row">
+
+                    <div class="template-info">
+                        <span class="template-name" th:text="${template.nama}">Nama Template</span>
+                        <div class="template-meta">
+                            <span class="type-badge" th:classappend="${template.jenis.name() == 'PEMASUKAN' ? 'pemasukan' : 'pengeluaran'}"
+                                  th:text="${template.jenis.name() == 'PEMASUKAN' ? 'PEMASUKAN' : 'PENGELUARAN'}">PEMASUKAN</span>
+                            <span class="item-count" th:text="${#lists.size(template.items)} + ' item'">3 item</span>
+                        </div>
+                    </div>
+
+                    <div class="template-items">
+                        <div th:each="item : ${template.items}" class="template-item-row">
+                            <span class="item-name" th:text="${item.keterangan != null ? item.keterangan : '-'}">Keterangan</span>
+                            <span class="item-kategori" th:text="${item.kategori != null ? item.kategori.nama : '-'}">Kategori</span>
+                            <span class="item-amount" th:data-amount="${item.jumlah}">Rp0</span>
+                        </div>
+                        <div class="template-total">
+                            <span class="total-label">Total Template</span>
+                            <span class="total-value" th:data-total="${#aggregates.sum(template.items.![jumlah])}">Rp0</span>
+                        </div>
+                    </div>
+
+                    <div class="template-actions">
+                        <form th:action="@{/template/use/{id}(id=${template.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-template-use">Gunakan</button>
+                        </form>
+                        <a th:href="@{/template/edit/{id}(id=${template.id})}" class="btn btn-template-edit">Edit</a>
+                        <form th:action="@{/template/delete/{id}(id=${template.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-template-delete" onclick="return confirmDeleteTemplate(this)">Hapus</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script th:src="@{/js/navigation.js}"></script>
+    <script>
+        function formatRupiah(amount) {
+            if (!amount || amount === 0) return 'Rp0';
+            var num = Number(amount);
+            if (isNaN(num) || num === 0) return 'Rp0';
+            return 'Rp ' + num.toLocaleString('id-ID');
+        }
+
+        document.querySelectorAll('[data-amount]').forEach(function(el) {
+            el.textContent = formatRupiah(el.getAttribute('data-amount'));
+        });
+
+        document.querySelectorAll('[data-total]').forEach(function(el) {
+            el.textContent = formatRupiah(el.getAttribute('data-total'));
+        });
+
+        function confirmDeleteTemplate(btn) {
+            var row = btn.closest('.template-row');
+            var name = row ? row.querySelector('.template-name').textContent : 'template ini';
+            if (!confirm('Hapus ' + name + '?\n\nTemplate ini akan dihapus dan tidak dapat digunakan kembali.')) {
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
