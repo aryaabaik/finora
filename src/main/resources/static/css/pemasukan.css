@@ -401,10 +401,20 @@ body::before {
     font-size: 13.5px;
     color: var(--charcoal);
     outline: none;
-    min-height: 42px;
+    min-height: 40px;
     width: 100%;
     box-sizing: border-box;
     transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.filter-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
 }
 
 .filter-group select:focus,
@@ -414,22 +424,45 @@ body::before {
     box-shadow: 0 0 0 3px rgba(107, 127, 89, 0.1);
 }
 
+.filter-group-date-range {
+    flex: 1.6;
+    min-width: 270px;
+}
+
+.date-range-fields,
 .date-inputs {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 4px;
+    width: 100%;
 }
 
-.date-inputs input[type="date"] {
+.date-field-col {
     flex: 1;
     min-width: 0;
 }
 
+.date-field-col .finora-datepicker-container,
+.date-inputs .finora-datepicker-container {
+    width: 100%;
+}
+
+.date-inputs input[type="date"],
+.date-field-col input[type="date"] {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
 .date-separator {
     color: var(--warm-gray);
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 600;
     flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    user-select: none;
+    padding: 0 2px;
 }
 
 .filter-actions {
@@ -608,25 +641,38 @@ body::before {
 /* Empty State */
 .empty-state {
     text-align: center;
-    padding: 40px 20px;
+    padding: 48px 24px;
     color: var(--warm-gray);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .empty-state p {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    margin: 0 0 6px 0;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
     color: var(--ink-navy);
 }
 
 .empty-state span {
     display: block;
-    font-size: 13.5px;
+    font-size: 14px;
     margin-bottom: 20px;
+    color: var(--warm-gray);
+    max-width: 420px;
+    line-height: 1.5;
 }
 
-.empty-state .btn-primary {
+.empty-state .btn {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 
 /* Pagination */
@@ -777,6 +823,16 @@ body::before {
     transition: all 0.2s ease;
 }
 
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+}
+
 .form-group input[type="date"]:focus,
 .form-group select:focus,
 .form-group textarea:focus {
@@ -811,7 +867,7 @@ body::before {
     flex-shrink: 0;
 }
 
-.amount-input-group input[type="number"] {
+.amount-input-group input {
     width: 100%;
     border: none;
     background: transparent;
@@ -820,6 +876,7 @@ body::before {
     color: var(--sage-dark);
     outline: none;
     padding: 4px 0;
+    font-family: inherit;
 }
 
 .form-actions {
@@ -1002,6 +1059,14 @@ body.modal-open {
         font-size: clamp(24px, 7vw, 28px);
     }
 
+    .empty-state {
+        padding: 32px 16px;
+        background: var(--ivory);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        margin: 8px 0;
+    }
+
     /* Filter Bar on Mobile: Clean vertical stack */
     .filter-bar {
         margin-bottom: 12px;
@@ -1031,14 +1096,20 @@ body.modal-open {
         min-height: 40px;
     }
 
+    .filter-group-date-range {
+        min-width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .date-range-fields,
     .date-inputs {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
     }
 
     .date-separator {
         text-align: center;
-        margin: 2px 0;
+        margin: 0;
     }
 
     .filter-actions {
@@ -1183,4 +1254,31 @@ body.modal-open {
         animation: none !important;
         transition: none !important;
     }
+}
+
+/* =========================================
+   PEMASUKAN MOTION ENHANCEMENTS
+   ========================================= */
+
+/* Income row enhanced interaction */
+.income-row {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 220ms ease,
+                background-color 180ms ease;
+}
+
+.income-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 35, 50, 0.08);
+}
+
+/* Delete button warning */
+.delete-btn:hover {
+    animation: warningShake 200ms ease;
+}
+
+@keyframes warningShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
 }

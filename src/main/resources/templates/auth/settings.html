@@ -106,19 +106,6 @@
                                 </button>
                             </form>
                         </div>
-
-                        <!-- Mini Logout Card -->
-                        <div class="sidebar-action-card">
-                            <p>Selesai menggunakan Finora? Anda dapat keluar dari sesi akun Anda di sini.</p>
-                            <a th:href="@{/logout}" class="btn-logout-alt">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                </svg>
-                                <span>Keluar dari Akun</span>
-                            </a>
-                        </div>
                     </div>
 
                     <!-- Right Column: Settings Forms -->
@@ -262,6 +249,22 @@
                                 </button>
                             </form>
                         </section>
+
+                        <!-- Logout Action Card -->
+                        <div class="sidebar-action-card">
+                            <div class="logout-card-text">
+                                <h3>Keluar dari Akun</h3>
+                                <p>Selesai menggunakan Finora? Anda dapat keluar dari sesi akun Anda di sini dengan aman.</p>
+                            </div>
+                            <a th:href="@{/logout}" class="btn-logout-alt">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>Keluar dari Akun</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

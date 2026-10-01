@@ -68,6 +68,83 @@ body {
     margin-bottom: 28px;
 }
 
+/* When header contains an action button, lay out as flex row */
+.page-header--with-action {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.page-header-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    /* Align vertically with the h1 baseline area */
+    padding-top: 22px;
+    flex-shrink: 0;
+}
+
+/* =========================================
+   Export Excel Button
+   ========================================= */
+.report-export-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    height: 42px;
+    background: var(--ink-navy);
+    color: var(--ivory);
+    border: 1px solid rgba(196, 163, 90, 0.25);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    letter-spacing: 0.2px;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(26, 35, 50, 0.14);
+    transition:
+        background 190ms ease,
+        transform 190ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 190ms ease;
+}
+
+.report-export-button svg {
+    flex-shrink: 0;
+    stroke: var(--ivory);
+    opacity: 0.85;
+    transition: opacity 190ms ease;
+}
+
+.report-export-button:hover {
+    background: var(--ink-navy-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 35, 50, 0.2);
+}
+
+.report-export-button:hover svg {
+    opacity: 1;
+}
+
+.report-export-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(26, 35, 50, 0.14);
+    transition-duration: 80ms;
+}
+
+.report-export-button:focus-visible {
+    outline: 2px solid var(--muted-gold);
+    outline-offset: 2px;
+}
+
 .header-meta {
     display: flex;
     align-items: center;
@@ -127,6 +204,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 160px;
 }
 
 .select-group label {
@@ -138,6 +216,8 @@ body {
 }
 
 .form-select {
+    width: 100%;
+    box-sizing: border-box;
     padding: 9px 36px 9px 14px;
     border-radius: 8px;
     border: 1px solid var(--kraft-dark);
@@ -153,7 +233,7 @@ body {
     background-repeat: no-repeat;
     background-position: right 12px center;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    min-width: 140px;
+    min-width: 120px;
 }
 
 .form-select:focus {
@@ -456,9 +536,13 @@ body {
 /* =========================================
    Detail Transaction Tables
    ========================================= */
+
+/* --- Desktop Table --- */
 .transaction-table-wrapper {
     overflow-x: auto;
     width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(217, 197, 165, 0.3);
 }
 
 .transaction-table {
@@ -469,25 +553,37 @@ body {
 }
 
 .transaction-table th {
-    font-size: 11px;
+    font-size: 10.5px;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--warm-gray);
-    font-weight: 600;
+    font-weight: 700;
     padding: 12px 16px;
     border-bottom: 1.5px solid var(--kraft-dark);
-    background: rgba(245, 239, 230, 0.6);
+    background: rgba(245, 239, 230, 0.7);
+    white-space: nowrap;
+}
+
+.transaction-table th.col-amount,
+.transaction-table td.col-amount {
+    text-align: right;
+    white-space: nowrap;
 }
 
 .transaction-table td {
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(217, 197, 165, 0.25);
+    border-bottom: 1px solid rgba(217, 197, 165, 0.2);
     color: var(--charcoal);
     font-size: 13px;
+    vertical-align: middle;
+}
+
+.transaction-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 .transaction-table tbody tr:hover {
-    background: rgba(245, 239, 230, 0.35);
+    background: rgba(245, 239, 230, 0.4);
 }
 
 .transaction-table .text-income {
@@ -500,12 +596,116 @@ body {
     font-weight: 700;
 }
 
+.transaction-table .col-date {
+    white-space: nowrap;
+    color: var(--warm-gray);
+    font-size: 12.5px;
+}
+
+/* Category label — plain text, no bubble */
+.badge-kategori {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--warm-gray);
+    white-space: nowrap;
+}
+
 .empty-table-cell {
     text-align: center;
     color: var(--warm-gray);
     font-style: italic;
-    padding: 24px !important;
+    padding: 28px !important;
 }
+
+/* --- Mobile Cards --- */
+.tx-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.tx-card {
+    padding: 14px 4px;
+    border-bottom: 1px solid rgba(217, 197, 165, 0.22);
+    transition: background 150ms ease;
+}
+
+.tx-card:last-child {
+    border-bottom: none;
+}
+
+.tx-card:active {
+    background: rgba(245, 239, 230, 0.5);
+}
+
+.tx-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.tx-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    flex: 1;
+}
+
+.tx-card-keterangan {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--charcoal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tx-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tx-card-date {
+    font-size: 11.5px;
+    color: var(--warm-gray);
+}
+
+.tx-card-amount {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tx-card-amount.text-income {
+    color: var(--income-green);
+}
+
+.tx-card-amount.text-expense {
+    color: var(--expense-terracotta);
+}
+
+.tx-card-empty {
+    padding: 28px 0;
+    text-align: center;
+    color: var(--warm-gray);
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* --- Responsive visibility --- */
+.desktop-only-table { display: block; }
+.mobile-only-cards  { display: none; }
+
+@media (max-width: 640px) {
+    .desktop-only-table { display: none; }
+    .mobile-only-cards  { display: flex; }
+}
+
 
 /* =========================================
    Empty State
@@ -696,14 +896,37 @@ body {
 
     .filter-section {
         padding: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .select-group {
+        width: 100%;
+        min-width: 0;
     }
 
     .form-select {
         width: 100%;
+        min-width: 0;
+        padding: 9px 30px 9px 12px;
+        font-size: 13.5px;
+        height: 38px;
     }
 
     .btn-filter {
+        grid-column: 1 / -1;
         width: 100%;
+        margin-top: 2px;
+    }
+
+    .period-info {
+        grid-column: 1 / -1;
+        margin-left: 0;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .insight-grid {
@@ -713,6 +936,22 @@ body {
     .chart-card {
         padding: 18px 16px;
     }
+
+    /* Header action area: let button drop below heading naturally */
+    .page-header--with-action {
+        gap: 12px;
+    }
+
+    .page-header-actions {
+        padding-top: 0;
+        width: 100%;
+    }
+
+    .report-export-button {
+        height: 40px;
+        padding: 0 16px;
+        font-size: 12.5px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -720,3 +959,26 @@ body {
         padding: 4px 12px 80px !important;
     }
 }
+
+/* =========================================
+   LAPORAN MOTION ENHANCEMENTS
+   ========================================= */
+
+/* Summary card stagger and hover */
+.summary-card {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 220ms ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 35, 50, 0.08);
+}
+
+/* Chart sections reveal setup */
+.chart-section,
+.category-section,
+.report-section {
+    opacity: 1;
+}
+

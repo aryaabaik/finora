@@ -299,8 +299,64 @@ body::before {
 }
 
 /* ========================================= */
-/* TOTAL SPENT RECEIPT                       */
+/* TOTAL EXPENSE SUMMARY (matches pemasukan) */
 /* ========================================= */
+.total-expense-summary {
+    background: #F5E8E3;
+    padding: 26px 30px;
+    border-radius: 12px;
+    position: relative;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.05),
+        0 8px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(168, 93, 63, 0.25);
+    transform: rotate(-0.5deg);
+    max-width: 400px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    animation: pengeluaranFadeInUp 400ms ease-out 60ms both;
+}
+
+.total-expense-summary::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    width: 48px;
+    height: 16px;
+    border-radius: 2px;
+    background: repeating-linear-gradient(45deg, rgba(168, 93, 63, 0.45), rgba(168, 93, 63, 0.45) 3px, rgba(255, 252, 245, 0.75) 3px, rgba(255, 252, 245, 0.75) 6px);
+    opacity: 0.75;
+    transform: rotate(2deg);
+}
+
+.total-expense-summary .label {
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    color: var(--terracotta-dark);
+    margin: 0 0 6px 0;
+    text-transform: capitalize;
+}
+
+.total-expense-summary .value {
+    font-family: 'Inter', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--terracotta-dark);
+    letter-spacing: -1px;
+    display: flex;
+    align-items: baseline;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.total-expense-summary .value .currency {
+    font-size: 0.6em;
+    margin-right: 6px;
+    font-weight: 600;
+}
+
+/* OLD RECEIPT - kept for reference but no longer used */
 .total-spent-receipt {
     position: relative;
     max-width: 360px;
@@ -456,10 +512,20 @@ body::before {
     font-size: 13.5px;
     color: var(--charcoal);
     outline: none;
-    min-height: 42px;
+    min-height: 40px;
     width: 100%;
     box-sizing: border-box;
     transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.filter-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
 }
 
 .filter-group select:focus,
@@ -469,22 +535,45 @@ body::before {
     box-shadow: 0 0 0 3px rgba(168, 93, 63, 0.1);
 }
 
+.filter-group-date-range {
+    flex: 1.6;
+    min-width: 270px;
+}
+
+.date-range-fields,
 .date-inputs {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 4px;
+    width: 100%;
 }
 
-.date-inputs input[type="date"] {
+.date-field-col {
     flex: 1;
     min-width: 0;
 }
 
+.date-field-col .finora-datepicker-container,
+.date-inputs .finora-datepicker-container {
+    width: 100%;
+}
+
+.date-inputs input[type="date"],
+.date-field-col input[type="date"] {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
 .date-separator {
     color: var(--warm-gray);
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 600;
     flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    user-select: none;
+    padding: 0 2px;
 }
 
 .filter-actions {
@@ -661,27 +750,44 @@ body::before {
 }
 
 /* Empty State */
-.empty-state {
+.empty-state,
+.empty-state-receipt {
     text-align: center;
-    padding: 40px 20px;
+    padding: 48px 24px;
     color: var(--warm-gray);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.empty-state p {
+.empty-state p,
+.empty-state-receipt p {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    margin: 0 0 6px 0;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
     color: var(--ink-navy);
 }
 
-.empty-state span {
+.empty-state span,
+.empty-state-receipt span {
     display: block;
-    font-size: 13.5px;
+    font-size: 14px;
     margin-bottom: 20px;
+    color: var(--warm-gray);
+    max-width: 420px;
+    line-height: 1.5;
 }
 
-.empty-state .btn-primary {
+.empty-state .btn,
+.empty-state-receipt .btn {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 
 /* Pagination */
@@ -775,89 +881,45 @@ body::before {
 }
 
 /* ========================================= */
-/* CREATE PAGE RECEIPT FORM                  */
+/* CREATE PAGE FORM CARD                     */
 /* ========================================= */
-.receipt-form-wrapper {
+.create-form-card {
+    background: var(--ivory);
+    padding: 40px 38px;
+    border-radius: 14px;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.04),
+        0 12px 32px rgba(0, 0, 0, 0.04);
     position: relative;
-    max-width: 540px;
+    border: 1px solid rgba(217, 197, 165, 0.4);
+    max-width: 560px;
     margin: 0 auto;
     animation: pengeluaranFadeInUp 400ms ease-out both;
 }
 
-.receipt-kraft-layer {
-    position: absolute;
-    top: -12px;
-    left: -12px;
-    right: 12px;
-    bottom: 12px;
-    background: var(--kraft);
-    border-radius: 4px;
-    transform: rotate(-1deg);
-    z-index: 1;
-    opacity: 0.7;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+.receipt-form-wrapper {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto;
+    animation: pengeluaranFadeInUp 400ms ease-out both;
+}
+
+.receipt-kraft-layer,
+.create-decor-receipt-side,
+.paper-clip,
+.create-decor-botanical {
+    display: none !important;
 }
 
 .receipt-form {
-    background: var(--receipt-paper);
-    border: 1px solid var(--receipt-edge);
+    background: var(--ivory);
+    border: 1px solid rgba(217, 197, 165, 0.4);
+    border-radius: 14px;
     padding: 40px 36px 36px;
     position: relative;
-    z-index: 2;
     box-shadow: 
-        0 2px 4px rgba(0, 0, 0, 0.05),
+        0 2px 6px rgba(0, 0, 0, 0.04),
         0 12px 32px rgba(0, 0, 0, 0.04);
-}
-
-.paper-clip {
-    position: absolute;
-    top: -16px;
-    right: 36px;
-    width: 24px;
-    height: 48px;
-    z-index: 10;
-}
-
-.paper-clip-inner {
-    width: 100%;
-    height: 100%;
-    border: 2px solid var(--kraft-darker);
-    border-radius: 8px 8px 4px 4px;
-    position: relative;
-}
-
-.paper-clip-inner::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    left: 3px;
-    right: 3px;
-    height: 28px;
-    border: 2px solid var(--kraft-darker);
-    border-radius: 6px 6px 3px 3px;
-    border-top: none;
-}
-
-.receipt-header {
-    text-align: center;
-    padding-bottom: 16px;
-    margin-bottom: 24px;
-    border-bottom: 1px dashed var(--kraft-dark);
-}
-
-.receipt-header-brand {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--warm-gray);
-    margin-bottom: 4px;
-}
-
-.receipt-header-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--ink-navy);
 }
 
 .form-group {
@@ -881,13 +943,23 @@ body::before {
     width: 100%;
     padding: 12px 14px;
     border: 1.5px solid var(--kraft-dark);
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--cream);
     font-size: 14px;
     color: var(--charcoal);
     outline: none;
     box-sizing: border-box;
     transition: all 0.2s ease;
+}
+
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
 }
 
 .form-group input[type="date"]:focus,
@@ -924,7 +996,7 @@ body::before {
     flex-shrink: 0;
 }
 
-.amount-input-group input[type="number"] {
+.amount-input-group input {
     width: 100%;
     border: none;
     background: transparent;
@@ -933,6 +1005,7 @@ body::before {
     color: var(--terracotta-dark);
     outline: none;
     padding: 4px 0;
+    font-family: inherit;
 }
 
 .receipt-divider {
@@ -1110,28 +1183,24 @@ body.modal-open {
         font-size: 12.5px;
     }
 
-    .total-spent-receipt {
+    .total-expense-summary {
+        transform: none;
         max-width: 100%;
+        padding: 14px 16px;
         margin-bottom: 12px;
     }
 
-    .total-receipt-paper {
-        transform: none;
-        padding: 14px 16px;
-    }
-
-    .total-receipt-amount {
+    .total-expense-summary .value {
         font-size: clamp(24px, 7vw, 28px);
-        margin-bottom: 8px;
     }
 
-    .total-receipt-brand,
-    .total-receipt-label {
-        font-size: 9px;
-    }
-
-    .total-receipt-divider {
-        margin-bottom: 8px;
+    .empty-state,
+    .empty-state-receipt {
+        padding: 32px 16px;
+        background: var(--ivory);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        margin: 8px 0;
     }
 
     /* Filter Bar on Mobile: Clean vertical stack */
@@ -1163,14 +1232,20 @@ body.modal-open {
         min-height: 40px;
     }
 
+    .filter-group-date-range {
+        min-width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .date-range-fields,
     .date-inputs {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
     }
 
     .date-separator {
         text-align: center;
-        margin: 2px 0;
+        margin: 0;
     }
 
     .filter-actions {
@@ -1317,4 +1392,40 @@ body.modal-open {
         animation: none !important;
         transition: none !important;
     }
+}
+
+/* =========================================
+   PENGELUARAN MOTION ENHANCEMENTS
+   ========================================= */
+
+/* Expense row enhanced interaction */
+.expense-row {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 220ms ease,
+                background-color 180ms ease;
+}
+
+.expense-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 35, 50, 0.08);
+}
+
+/* Delete button warning */
+.delete-btn:hover {
+    animation: warningShake 200ms ease;
+}
+
+@keyframes warningShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* Receipt subtle enhancement */
+.total-receipt-paper {
+    transition: transform 220ms ease;
+}
+
+.total-receipt-paper:hover {
+    transform: translateY(-1px);
 }

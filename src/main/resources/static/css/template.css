@@ -160,24 +160,40 @@ body {
 .template-row .type-badge {
     display: inline-flex;
     align-items: center;
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
+    gap: 6px;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
 }
 
+.template-row .type-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
 .template-row .type-badge.pemasukan {
-    background: rgba(82, 121, 74, 0.1);
-    color: var(--sage-dark);
-    border: 1px solid rgba(82, 121, 74, 0.2);
+    color: var(--sage-dark, #2d6a4f);
+}
+
+.template-row .type-badge.pemasukan::before {
+    background: var(--sage-dark, #2d6a4f);
 }
 
 .template-row .type-badge.pengeluaran {
-    background: rgba(168, 93, 63, 0.1);
-    color: var(--expense-dark);
-    border: 1px solid rgba(168, 93, 63, 0.2);
+    color: var(--expense-dark, #a85d3f);
+}
+
+.template-row .type-badge.pengeluaran::before {
+    background: var(--expense-dark, #a85d3f);
 }
 
 .template-row .item-count {
@@ -602,19 +618,40 @@ body {
 }
 
 .form-group input[type="text"],
-.form-group input[type="number"],
-.form-group select {
+.form-group input[type="number"] {
     width: 100%;
-    padding: 14px 16px;
+    padding: 12px 14px;
     border: 1.5px solid var(--kraft-dark);
     border-radius: 8px;
     background: var(--cream);
-    font-size: 15px;
+    font-size: 14px;
     color: var(--charcoal);
     transition: all 0.2s ease;
     outline: none;
     font-family: inherit;
-    min-height: 48px;
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 10px 36px 10px 14px;
+    border: 1.5px solid var(--kraft-dark);
+    border-radius: 8px;
+    background-color: var(--cream);
+    font-size: 14px;
+    color: var(--charcoal);
+    transition: all 0.2s ease;
+    outline: none;
+    font-family: inherit;
+    min-height: 42px;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
 }
 
 .form-group input:focus,
@@ -640,7 +677,7 @@ body {
     border-radius: 10px;
     padding: 16px 18px;
     display: grid;
-    grid-template-columns: 1fr 1fr 100px auto;
+    grid-template-columns: 1fr 1fr 150px auto;
     gap: 12px;
     align-items: end;
     transition: all 0.2s ease;
@@ -666,6 +703,56 @@ body {
     padding: 10px 12px;
     font-size: 13.5px;
     min-height: 42px;
+}
+
+.item-amount-group {
+    display: flex;
+    align-items: center;
+    background: var(--ivory);
+    border: 1px solid var(--kraft-dark);
+    border-radius: 8px;
+    padding: 0 12px;
+    min-height: 42px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.item-amount-group:focus-within {
+    border-color: var(--ink-navy);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(26, 35, 50, 0.08);
+}
+
+.item-amount-group .currency-prefix {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--warm-gray);
+    margin-right: 6px;
+    user-select: none;
+}
+
+.item-amount-group input.item-amount-input {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: var(--charcoal) !important;
+    width: 100% !important;
+    min-height: auto !important;
+    height: 100% !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.form-item .item-field select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
 }
 
 .form-item .remove-item-btn {
@@ -970,8 +1057,8 @@ body {
     }
 
     .type-badge {
-        font-size: 9.5px;
-        padding: 1px 8px;
+        font-size: 10px;
+        padding: 0;
     }
 
     .form-item {
@@ -1038,3 +1125,38 @@ body::before {
 .empty-state-container {
     animation: fadeInUp 500ms ease-out both;
 }
+
+/* =========================================
+   TEMPLATE MOTION ENHANCEMENTS
+   ========================================= */
+
+/* Template row enhanced interaction */
+.template-row {
+    transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 250ms ease;
+}
+
+.template-row:hover {
+    transform: translateY(-3px) rotate(0.2deg);
+    box-shadow: 0 8px 24px rgba(26, 35, 50, 0.12);
+}
+
+/* Template action buttons */
+.btn-template-use,
+.btn-template-edit,
+.btn-template-delete {
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 180ms ease,
+                color 180ms ease;
+}
+
+.btn-template-delete:hover {
+    animation: warningShake 200ms ease;
+}
+
+@keyframes warningShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+

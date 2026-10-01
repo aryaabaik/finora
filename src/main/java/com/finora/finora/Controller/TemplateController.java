@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+
+import java.beans.PropertyEditorSupport;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -24,6 +29,26 @@ public class TemplateController {
         this.templateService = templateService;
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(BigDecimal.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.trim().isEmpty()) {
+                    setValue(null);
+                } else {
+                    String clean = text.replace(".", "").replace(",", ".");
+                    setValue(new BigDecimal(clean));
+                }
+            }
+
+            @Override
+            public String getAsText() {
+                BigDecimal value = (BigDecimal) getValue();
+                return value != null ? value.toPlainString() : "";
+            }
+        });
+    }
 
     // =========================
     // DAFTAR TEMPLATE

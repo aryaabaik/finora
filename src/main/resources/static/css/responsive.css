@@ -1,13 +1,5 @@
-/**
- * Finora — Shared Responsive Foundation
- * Phase 1: Global responsive setup, mobile navigation, typography, spacing
- */
-
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Caveat:wght@400;500;600&display=swap');
 
-/* =========================================
-   1. GLOBAL RESET & BOX-SIZING
-   ========================================= */
 *,
 *::before,
 *::after {
@@ -28,7 +20,6 @@ body {
     min-height: 100vh;
 }
 
-/* Images & media never exceed container */
 img,
 svg,
 video,
@@ -39,7 +30,6 @@ iframe {
     display: block;
 }
 
-/* Form elements inherit font */
 button,
 input,
 select,
@@ -48,17 +38,12 @@ textarea {
     font-size: inherit;
 }
 
-/* =========================================
-   2. CSS CUSTOM PROPERTIES (Design Tokens)
-   ========================================= */
 :root {
-    /* Font families */
     --font-display: 'DM Serif Display', Georgia, serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-accent: 'Caveat', cursive;
     --font-legacy-serif: 'Cormorant Garamond', Georgia, serif;
 
-    /* Spacing scale (fluid via clamp where needed) */
     --space-xs: 4px;
     --space-sm: 8px;
     --space-md: 16px;
@@ -67,10 +52,8 @@ textarea {
     --space-2xl: 48px;
     --space-3xl: 64px;
 
-    /* Touch targets */
     --touch-target: 44px;
 
-    /* Z-index layers */
     --z-base: 1;
     --z-paper-texture: 1;
     --z-content: 2;
@@ -80,27 +63,23 @@ textarea {
     --z-drawer-overlay: 250;
     --z-modal: 400;
 
-    /* Transitions */
     --transition-fast: 150ms ease;
     --transition-base: 200ms ease;
     --transition-slow: 300ms ease;
+    --ease-drawer: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-nav-item: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-active: cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Breakpoints */
     --bp-mobile: 480px;
     --bp-mobile-sm: 360px;
     --bp-tablet: 768px;
     --bp-desktop: 1024px;
     --bp-wide: 1440px;
 
-    /* Sidebar */
     --sidebar-width: 260px;
     --sidebar-width-collapsed: 70px;
     --sidebar-width-tablet: 210px;
-
-    /* Header */
     --mobile-header-height: 56px;
-
-    /* Colors (shared with individual stylesheets) */
     --cream: #FDF8F0;
     --cream-light: #FFFCF5;
     --ivory: #FFF9EE;
@@ -123,9 +102,6 @@ textarea {
     --cream-card: #FFF6E0;
 }
 
-/* =========================================
-   3. PAPER TEXTURE (Subtle, global)
-   ========================================= */
 .paper-texture {
     position: fixed;
     top: 0;
@@ -138,16 +114,11 @@ textarea {
     opacity: 1;
 }
 
-/* =========================================
-   4. RESPONSIVE TYPOGRAPHY
-   ========================================= */
-
-/* Base body text - fluid scaling */
 body {
     font-size: clamp(14px, 0.875rem + 0.2vw, 16px);
 }
 
-/* Headings - maintain hierarchy on mobile */
+
 h1 {
     font-family: var(--font-display);
     font-size: clamp(28px, 2.5rem, 42px);
@@ -198,9 +169,7 @@ h3 {
     outline-offset: 2px;
 }
 
-/* =========================================
-   5. REDUCED MOTION
-   ========================================= */
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -212,9 +181,7 @@ h3 {
     }
 }
 
-/* =========================================
-    6. LAYOUT UTILITIES
-    ========================================= */
+
 .layout {
     display: flex;
     min-height: 100vh;
@@ -241,6 +208,14 @@ h3 {
 
 /* =========================================
     17. BOTTOM NAVIGATION (mobile only)
+    =========================================
+    Design goals:
+    - 5 symmetrical columns (Beranda, Masuk, Center +, Keluar, Laporan)
+    - Always-visible labels for all items
+    - Balanced 1fr 1fr auto 1fr 1fr grid
+    - Clean active indicator (gold / green / terracotta bar)
+    - Taller bar (64px) for comfortable thumb reach
+    - Warm ivory surface with subtle ambient shadow
     ========================================= */
 .bottom-nav {
     display: none;
@@ -249,127 +224,164 @@ h3 {
     left: 0;
     right: 0;
     z-index: var(--z-mobile-header);
-    background: var(--cream-light);
-    border-top: 1px solid var(--kraft-dark);
-    box-shadow: 0 -4px 24px rgba(26, 35, 50, 0.08);
+    /* Warm ivory background matching Finora surface */
+    background: var(--ivory);
+    border-top: 1px solid rgba(217, 197, 165, 0.55);
+    box-shadow:
+        0 -1px 0 rgba(217, 197, 165, 0.25),
+        0 -6px 20px rgba(26, 35, 50, 0.06);
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    height: 56px;
+    height: 64px;
 }
 
 .bottom-nav-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    max-width: 500px;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto 1fr 1fr;
+    align-items: stretch;
+    max-width: 440px;
     margin: 0 auto;
-    height: 56px;
-    padding: 0 var(--space-md);
+    height: 64px;
+    padding: 0 4px;
 }
 
+/* Each nav item: icon + label always visible, equal width */
 .bottom-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    padding: 6px 10px;
-    border-radius: 20px;
-    color: var(--ink-navy-light);
+    gap: 3px;
+    padding: 6px 2px 4px;
+    color: var(--warm-gray);
     text-decoration: none;
-    font-size: 9.5px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-    min-width: 48px;
-    min-height: 40px;
+    min-width: 0;
     position: relative;
     -webkit-tap-highlight-color: transparent;
     outline: none;
+    border-radius: 0;
     transition:
-        transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
-        background-color 280ms cubic-bezier(0.16, 1, 0.3, 1),
-        box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
-        color 200ms ease;
+        color 200ms var(--ease-active),
+        transform 150ms var(--ease-nav-item);
+}
+
+/* Active indicator line at top of nav item */
+.bottom-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 22px;
+    height: 2.5px;
+    background: var(--gold-dark);
+    border-radius: 0 0 3px 3px;
+    transition: transform 280ms var(--ease-drawer);
 }
 
 .bottom-nav-item .bottom-nav-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    transition:
-        transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
-        color 200ms ease;
+    width: 22px;
+    height: 22px;
+    transition: transform 260ms var(--ease-drawer);
 }
 
 .bottom-nav-item .bottom-nav-icon svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
     stroke-width: 1.8;
-    transition: stroke-width 200ms ease;
-}
-
-.bottom-nav-item .bottom-nav-label {
-    opacity: 0;
-    transform: translateY(4px);
     transition:
-        opacity 280ms cubic-bezier(0.16, 1, 0.3, 1) 60ms,
-        transform 280ms cubic-bezier(0.16, 1, 0.3, 1) 60ms,
-        color 200ms ease;
-    font-size: 9px;
-    font-weight: 600;
-    white-space: nowrap;
+        stroke-width 200ms var(--ease-active),
+        stroke 200ms var(--ease-active);
 }
 
-/* Active state: premium pill with ink-navy + gold accent */
+/* Label always visible */
+.bottom-nav-item .bottom-nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+    line-height: 1.1;
+    color: currentColor;
+    transition:
+        color 200ms var(--ease-active),
+        opacity 200ms var(--ease-active);
+}
+
+/* ── Active State ─────────────────────────── */
 .bottom-nav-item.active {
-    color: var(--cream-light);
-    background: linear-gradient(135deg, var(--ink-navy) 0%, var(--ink-navy-light) 100%);
-    border-radius: 20px;
-    padding: 6px 14px;
-    box-shadow:
-        0 4px 16px rgba(26, 35, 50, 0.28),
-        0 1px 0 rgba(217, 197, 165, 0.25) inset;
-    transform: translateY(-2px);
-    border: 1px solid rgba(196, 163, 90, 0.35);
+    color: var(--ink-navy);
+}
+
+.bottom-nav-item.active::before {
+    transform: translateX(-50%) scaleX(1);
 }
 
 .bottom-nav-item.active .bottom-nav-icon {
-    transform: scale(1.1);
-    color: var(--muted-gold);
+    transform: translateY(-2px) scale(1.06);
 }
 
 .bottom-nav-item.active .bottom-nav-icon svg {
-    stroke-width: 2.2;
-    stroke: var(--muted-gold);
+    stroke-width: 2.3;
+    stroke: var(--ink-navy);
 }
 
 .bottom-nav-item.active .bottom-nav-label {
-    opacity: 1;
-    transform: translateY(0);
-    color: var(--kraft-dark);
     font-weight: 700;
-    letter-spacing: 0.3px;
-}
-
-/* Hover (inactive only) */
-.bottom-nav-item:hover:not(.active) {
     color: var(--ink-navy);
-    background: rgba(217, 197, 165, 0.28);
-    border-radius: 20px;
-    transform: translateY(-1px);
+    opacity: 1;
 }
 
-.bottom-nav-item:active:not(.active) {
-    transform: scale(0.92) translateY(0);
+/* Color-coded active states for Masuk (green) and Keluar (terracotta) */
+.bottom-nav-item[data-active="pemasukan"].active {
+    color: var(--income-green, #52794A);
+}
+.bottom-nav-item[data-active="pemasukan"].active::before {
+    background: var(--income-green, #52794A);
+}
+.bottom-nav-item[data-active="pemasukan"].active .bottom-nav-icon svg {
+    stroke: var(--income-green, #52794A);
+}
+.bottom-nav-item[data-active="pemasukan"].active .bottom-nav-label {
+    color: var(--income-green, #52794A);
+}
+
+.bottom-nav-item[data-active="pengeluaran"].active {
+    color: var(--terracotta, #A85D3F);
+}
+.bottom-nav-item[data-active="pengeluaran"].active::before {
+    background: var(--terracotta, #A85D3F);
+}
+.bottom-nav-item[data-active="pengeluaran"].active .bottom-nav-icon svg {
+    stroke: var(--terracotta, #A85D3F);
+}
+.bottom-nav-item[data-active="pengeluaran"].active .bottom-nav-label {
+    color: var(--terracotta, #A85D3F);
+}
+
+/* ── Inactive hover ────────────────────────── */
+.bottom-nav-item:hover:not(.active) {
+    color: var(--ink-navy-light);
+}
+
+.bottom-nav-item:hover:not(.active) .bottom-nav-icon svg {
+    stroke: var(--ink-navy-light);
+}
+
+/* ── Press feedback ────────────────────────── */
+.bottom-nav-item:active {
+    transform: scale(0.94);
     transition-duration: 100ms;
-    background: rgba(217, 197, 165, 0.4);
+    transition-timing-function: ease;
 }
 
-/* Focus visible */
+/* ── Focus ring ────────────────────────────── */
 .bottom-nav-item:focus-visible {
     outline: 2px solid var(--muted-gold);
     outline-offset: 2px;
+    border-radius: 8px;
 }
 
 /* =========================================
@@ -379,7 +391,8 @@ h3 {
     .bottom-nav-item,
     .bottom-nav-item .bottom-nav-icon,
     .bottom-nav-item .bottom-nav-icon svg,
-    .bottom-nav-item .bottom-nav-label {
+    .bottom-nav-item .bottom-nav-label,
+    .bottom-nav-item::before {
         transition-duration: 0.01ms !important;
         transition-delay: 0ms !important;
     }
@@ -389,12 +402,352 @@ h3 {
     18. BODY PADDING FOR BOTTOM NAV
     ========================================= */
 body.has-bottom-nav {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 body.has-bottom-nav .main,
 body.has-bottom-nav .main-content {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+/* =========================================
+    19. CENTER ADD NAVIGATION ACTION
+    ========================================= */
+
+/* Wrapper - acts as a navigation item */
+.nav-add-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 58px;
+    padding: 0 4px;
+}
+
+/* Center action button — elevated circular add button */
+.nav-add-button {
+    width: 48px;
+    height: 48px;
+    /* Perfect circle */
+    border-radius: 50%;
+    background: var(--ink-navy);
+    /* Subtle gold rim matches brand */
+    border: 2px solid rgba(196, 163, 90, 0.35);
+    box-shadow:
+        0 4px 14px rgba(26, 35, 50, 0.25),
+        0 1px 4px rgba(26, 35, 50, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    position: relative;
+    /* Lift the button above the nav bar slightly */
+    transform: translateY(-8px);
+    transition:
+        transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        background 220ms ease;
+}
+
+.nav-add-button .nav-add-icon {
+    color: var(--cream-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-add-button .nav-add-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Hover */
+@media (hover: hover) {
+    .nav-add-button:hover {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow:
+            0 8px 20px rgba(26, 35, 50, 0.3),
+            0 2px 6px rgba(26, 35, 50, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        background: var(--ink-navy-light);
+    }
+}
+
+/* Press state */
+.nav-add-button:active {
+    transform: translateY(-6px) scale(0.95);
+    transition-duration: 80ms;
+}
+
+/* Open state — rotates to X */
+.nav-add-button.is-open .nav-add-icon {
+    transform: rotate(45deg);
+}
+
+.nav-add-button.is-open {
+    background: var(--terracotta);
+    border-color: rgba(168, 93, 63, 0.4);
+    box-shadow:
+        0 4px 16px rgba(168, 93, 63, 0.3),
+        0 2px 6px rgba(26, 35, 50, 0.12);
+}
+
+/* Focus ring */
+.nav-add-button:focus-visible {
+    outline: 2px solid var(--muted-gold);
+    outline-offset: 3px;
+}
+
+/* =========================================
+    20. ADD ACTION MENU OVERLAY
+    ========================================= */
+.nav-add-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(16, 24, 38, 0.48);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 210;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 240ms cubic-bezier(0.16, 1, 0.3, 1), visibility 240ms ease;
+}
+
+.nav-add-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* =========================================
+    21. ADD ACTION MENU (LUXURY POPOVER CARD)
+    ========================================= */
+.nav-add-menu {
+    position: fixed;
+    bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%) translateY(10px) scale(0.96);
+    width: max-content;
+    min-width: 220px;
+    max-width: calc(100vw - 32px);
+    background: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 18px;
+    padding: 6px;
+    box-shadow:
+        0 20px 44px -8px rgba(18, 25, 38, 0.22),
+        0 6px 16px -2px rgba(18, 25, 38, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    z-index: 215;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform-origin: center bottom;
+    transition:
+        transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 200ms ease,
+        visibility 200ms ease;
+}
+
+.nav-add-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* No visible header on compact floating card */
+.nav-add-menu-header {
+    display: none;
+}
+
+.nav-add-menu-tag {
+    display: none;
+}
+
+.nav-add-menu-title {
+    display: none;
+}
+
+/* Items List */
+.nav-add-menu-items {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* Action Rows — clean, single-line, no borders */
+.nav-add-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 13px;
+    text-decoration: none;
+    color: var(--ink-navy);
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+        transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 200ms ease,
+        background-color 140ms ease;
+}
+
+.nav-add-action.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.nav-add-action:hover {
+    background: rgba(18, 25, 38, 0.05);
+}
+
+.nav-add-action:active {
+    background: rgba(18, 25, 38, 0.09);
+    transform: scale(0.985);
+    transition-duration: 60ms;
+}
+
+.nav-add-action:focus-visible {
+    outline: none;
+    background: rgba(18, 25, 38, 0.05);
+}
+
+/* Icon badge — compact & crisp */
+.nav-add-action-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 160ms ease;
+}
+
+.nav-add-action:hover .nav-add-action-badge {
+    transform: scale(1.06);
+}
+
+.income-badge {
+    background: rgba(45, 106, 79, 0.12);
+    color: var(--sage-dark, #2d6a4f);
+}
+
+.income-badge svg {
+    stroke: var(--sage-dark, #2d6a4f);
+}
+
+.expense-badge {
+    background: rgba(204, 75, 44, 0.12);
+    color: var(--terracotta, #cc4b2c);
+}
+
+.expense-badge svg {
+    stroke: var(--terracotta, #cc4b2c);
+}
+
+/* Typography & Info */
+.nav-add-action-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.nav-add-action-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-navy, #162032);
+    line-height: 1.2;
+    white-space: nowrap;
+    letter-spacing: -0.15px;
+}
+
+.nav-add-action-desc {
+    display: none;
+}
+
+/* Right Chevron */
+.nav-add-action-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(22, 32, 50, 0.28);
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 6px;
+    transition: transform 160ms ease, color 160ms ease;
+}
+
+.nav-add-action:hover .nav-add-action-arrow {
+    transform: translateX(2px);
+    color: rgba(22, 32, 50, 0.6);
+}
+
+/* =========================================
+    22. ADD MENU RESPONSIVE
+    ========================================= */
+
+/* Small mobile */
+@media (max-width: 360px) {
+    .nav-add-menu {
+        min-width: 200px;
+        max-width: calc(100vw - 24px);
+    }
+}
+
+
+
+/* Desktop: hide add button (sidebar navigation is primary) */
+@media (min-width: 769px) {
+    .nav-add-wrapper,
+    .nav-add-menu,
+    .nav-add-overlay {
+        display: none !important;
+    }
+}
+
+/* =========================================
+    23. ADD MENU REDUCED MOTION
+    ========================================= */
+@media (prefers-reduced-motion: reduce) {
+    .nav-add-button,
+    .nav-add-button .nav-add-icon,
+    .nav-add-menu,
+    .nav-add-action,
+    .nav-add-overlay {
+        transition-duration: 0.01ms !important;
+        animation: none !important;
+    }
+    
+    .nav-add-button.is-open .nav-add-icon {
+        transform: none !important;
+    }
+    
+    .nav-add-action {
+        transform: none !important;
+    }
+    
+    .nav-add-action.is-visible {
+        transform: none !important;
+    }
 }
 
 /* =========================================
@@ -473,7 +826,11 @@ body.has-bottom-nav .main-content {
     font-size: 13.5px;
     font-weight: 500;
     letter-spacing: 0.3px;
-    transition: all var(--transition-fast);
+    transition:
+        background 160ms var(--ease-active),
+        color 160ms var(--ease-active),
+        transform 160ms var(--ease-nav-item),
+        box-shadow 160ms ease;
     position: relative;
     min-height: var(--touch-target);
 }
@@ -482,6 +839,11 @@ body.has-bottom-nav .main-content {
     background: rgba(255, 255, 255, 0.4);
     transform: translateX(2px);
     color: var(--ink-navy);
+}
+
+.menu-item:active {
+    transform: translateX(1px) scale(0.98);
+    transition-duration: 80ms;
 }
 
 .menu-item.active {
@@ -532,15 +894,23 @@ body.has-bottom-nav .main-content {
 /* =========================================
    8. MOBILE HEADER (visible <= 768px)
    ========================================= */
+/* =========================================
+   8. MOBILE HEADER (visible <= 768px)
+   =========================================
+   Refined: warm ivory background, clean
+   logo treatment, subtle border — no heavy
+   shadow, letting content breathe.
+   ========================================= */
 .mobile-header {
     display: none;
     position: sticky;
     top: 0;
     z-index: var(--z-mobile-header);
     height: var(--mobile-header-height);
-    background: var(--cream-light);
-    border-bottom: 1px solid var(--kraft-dark);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+    /* Warmer, more premium surface */
+    background: var(--ivory);
+    border-bottom: 1px solid rgba(217, 197, 165, 0.55);
+    box-shadow: 0 2px 8px rgba(26, 35, 50, 0.05);
     padding: 0 var(--space-md);
 }
 
@@ -558,34 +928,42 @@ body.has-bottom-nav .main-content {
     gap: 10px;
     text-decoration: none;
     color: var(--ink-navy);
+    transition: opacity 150ms ease;
+}
+
+.mobile-logo:active {
+    opacity: 0.7;
 }
 
 .mobile-logo-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--ink-navy);
     color: var(--cream-light);
-    border-radius: 6px;
-    font-size: 16px;
+    /* Slightly rounded square — matches sidebar logo style */
+    border-radius: 8px;
+    font-size: 17px;
     font-weight: 700;
     flex-shrink: 0;
+    /* Gold bottom border for brand consistency */
+    box-shadow: 0 2px 0 rgba(196, 163, 90, 0.35);
 }
 
 .mobile-logo-text {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
     color: var(--ink-navy);
 }
 
 .mobile-header-right {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: 6px;
     flex-shrink: 0;
 }
 
@@ -596,16 +974,30 @@ body.has-bottom-nav .main-content {
     width: var(--touch-target);
     height: var(--touch-target);
     flex-shrink: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: opacity 150ms ease;
+}
+
+.mobile-profile:active {
+    opacity: 0.75;
 }
 
 .mobile-profile-avatar {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
-    border: 1.5px solid var(--kraft-dark);
+    /* Gold-tinted border for premium look */
+    border: 2px solid rgba(196, 163, 90, 0.5);
     background: var(--ink-navy);
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(26, 35, 50, 0.12);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.mobile-profile:hover .mobile-profile-avatar {
+    border-color: var(--gold-dark);
+    box-shadow: 0 3px 10px rgba(26, 35, 50, 0.18);
 }
 
 .mobile-profile-avatar-img {
@@ -624,59 +1016,77 @@ body.has-bottom-nav .main-content {
     color: var(--cream-light);
     font-size: 14px;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
+/* Hamburger button — cleaner, icon-only */
 .hamburger {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 5px;
-    width: var(--touch-target);
-    height: var(--touch-target);
+    gap: 4px;
+    width: 40px;
+    height: 40px;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 8px;
     border-radius: 8px;
-    transition: background var(--transition-fast);
+    transition:
+        background 150ms ease,
+        transform 150ms var(--ease-nav-item);
     flex-shrink: 0;
 }
 
 .hamburger:hover {
-    background: rgba(217, 197, 165, 0.3);
+    background: rgba(217, 197, 165, 0.35);
+    transform: scale(1.04);
+}
+
+.hamburger:active {
+    transform: scale(0.93);
+    transition-duration: 80ms;
 }
 
 .hamburger:focus-visible {
-    outline: 2px solid var(--muted-blue);
+    outline: 2px solid var(--muted-gold);
     outline-offset: 2px;
 }
 
 .hamburger-line {
     display: block;
-    width: 24px;
-    height: 2px;
     background: var(--ink-navy);
     border-radius: 2px;
-    transition: transform var(--transition-base), opacity var(--transition-base);
+    transition:
+        transform 220ms var(--ease-drawer),
+        opacity 180ms ease,
+        width 180ms var(--ease-active);
     transform-origin: center;
 }
 
-/* Hamburger animation to X */
+/* Three lines of different widths for visual hierarchy */
+.hamburger-line:nth-child(1) { width: 20px; height: 1.5px; }
+.hamburger-line:nth-child(2) { width: 14px; height: 1.5px; }
+.hamburger-line:nth-child(3) { width: 18px; height: 1.5px; }
+
+/* Hamburger → X animation */
 .hamburger[aria-expanded="true"] .hamburger-line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    width: 20px;
+    transform: translateY(5.5px) rotate(45deg);
 }
 .hamburger[aria-expanded="true"] .hamburger-line:nth-child(2) {
     opacity: 0;
+    transform: scaleX(0);
 }
 .hamburger[aria-expanded="true"] .hamburger-line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+    width: 20px;
+    transform: translateY(-5.5px) rotate(-45deg);
 }
 
 /* =========================================
    9. MOBILE DRAWER (sidebar replacement on mobile)
    ========================================= */
 .drawer-overlay {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -685,12 +1095,17 @@ body.has-bottom-nav .main-content {
     background: rgba(26, 35, 50, 0.35);
     z-index: var(--z-drawer-overlay);
     opacity: 0;
-    transition: opacity var(--transition-base);
+    visibility: hidden;
+    transition:
+        opacity 280ms ease,
+        visibility 280ms ease;
+    pointer-events: none;
 }
 
 .drawer-overlay.is-open {
-    display: block;
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .drawer {
@@ -705,15 +1120,30 @@ body.has-bottom-nav .main-content {
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
     z-index: var(--z-drawer);
     transform: translateX(-100%);
-    transition: transform var(--transition-slow) ease-out;
+    transition: transform 320ms var(--ease-drawer);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     border-right: 1px solid var(--kraft-dark);
+    will-change: transform;
 }
 
 .drawer.is-open {
     transform: translateX(0);
+}
+
+/* Closing state — reverse animation in progress */
+.drawer.is-closing {
+    transform: translateX(-100%);
+    transition: transform 260ms cubic-bezier(0.4, 0, 0.8, 0.2);
+}
+
+.drawer-overlay.is-closing {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 260ms ease,
+        visibility 260ms ease;
 }
 
 .drawer-header {
@@ -764,12 +1194,21 @@ body.has-bottom-nav .main-content {
     border-radius: 8px;
     cursor: pointer;
     color: var(--ink-navy);
-    transition: background var(--transition-fast);
+    transition:
+        background 150ms ease,
+        transform 150ms var(--ease-nav-item),
+        opacity 150ms ease;
     flex-shrink: 0;
 }
 
 .drawer-close:hover {
     background: rgba(217, 197, 165, 0.3);
+    transform: rotate(90deg);
+}
+
+.drawer-close:active {
+    transform: rotate(90deg) scale(0.88);
+    transition-duration: 80ms;
 }
 
 .drawer-close:focus-visible {
@@ -801,7 +1240,11 @@ body.has-bottom-nav .main-content {
     font-size: 15px;
     font-weight: 500;
     letter-spacing: 0.3px;
-    transition: all var(--transition-fast);
+    transition:
+        background 160ms var(--ease-active),
+        color 160ms var(--ease-active),
+        transform 150ms var(--ease-nav-item),
+        box-shadow 160ms ease;
     min-height: var(--touch-target);
     border: none;
     background: transparent;
@@ -813,6 +1256,12 @@ body.has-bottom-nav .main-content {
 .drawer-nav-item:hover {
     background: rgba(217, 197, 165, 0.4);
     color: var(--ink-navy);
+    transform: translateX(2px);
+}
+
+.drawer-nav-item:active {
+    transform: translateX(1px) scale(0.98);
+    transition-duration: 80ms;
 }
 
 .drawer-nav-item.active {
@@ -822,6 +1271,7 @@ body.has-bottom-nav .main-content {
     position: relative;
     box-shadow: 0 2px 12px rgba(26, 35, 50, 0.2);
     border: 1px solid rgba(196, 163, 90, 0.2);
+    transform: none;
 }
 
 .drawer-nav-item.active .menu-icon,
@@ -891,23 +1341,14 @@ body.drawer-open {
         display: block;
     }
 
-    /* Hide drawer and overlay on mobile (bottom nav replaces drawer) */
-    .drawer {
-        display: none !important;
-    }
-
-    .drawer-overlay {
-        display: none !important;
-    }
-
-    /* Hide hamburger on mobile (bottom nav replaces drawer) */
+    /* Mobile hamburger menu in top header */
     .hamburger {
-        display: none !important;
+        display: flex !important;
     }
 
     /* Add safe area class to body */
     body {
-        padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
     }
 
 .main,
@@ -916,7 +1357,7 @@ body.drawer-open {
     width: 100% !important;
     max-width: 100% !important;
     padding-top: 4px !important;
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
     /* Dashboard's desktop topbar uses negative margins; keep it within mobile viewport. */
@@ -1033,22 +1474,23 @@ body.drawer-open {
         height: 52px;
     }
 
+    /* Slightly smaller bottom nav on tiny phones, but still readable */
     .bottom-nav {
-        height: 52px;
+        height: 58px;
     }
 
     .bottom-nav-inner {
-        height: 52px;
-        padding: 0 var(--space-sm);
+        height: 58px;
+        padding: 0 2px;
     }
 
     .main,
     .main-content {
-        padding: calc(52px + var(--space-xs)) var(--space-xs) calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+        padding: calc(52px + var(--space-xs)) var(--space-xs) calc(70px + env(safe-area-inset-bottom, 0px)) !important;
     }
 
     body {
-        padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
     }
 
     .drawer {
@@ -1056,16 +1498,13 @@ body.drawer-open {
         max-width: 90vw;
     }
 
-    .hamburger-line {
-        width: 20px;
-    }
-
+    /* Hamburger X animation adjusted for new 1.5px lines */
     .hamburger[aria-expanded="true"] .hamburger-line:nth-child(1) {
-        transform: translateY(6px) rotate(45deg);
+        transform: translateY(5.5px) rotate(45deg);
     }
 
     .hamburger[aria-expanded="true"] .hamburger-line:nth-child(3) {
-        transform: translateY(-6px) rotate(-45deg);
+        transform: translateY(-5.5px) rotate(-45deg);
     }
 
     .mobile-logo-text {
@@ -1154,12 +1593,15 @@ body.drawer-open {
 /* =========================================
    13. FORM ELEMENTS (Mobile-friendly)
    ========================================= */
+
+/* Text-type inputs and textarea get generous touch-friendly padding.
+   select is intentionally excluded here so each page's own CSS
+   controls its size (filter selects, laporan selects, etc. all differ). */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="number"],
 input[type="date"],
-select,
 textarea {
     width: 100%;
     padding: 14px 16px;
@@ -1173,12 +1615,549 @@ textarea {
     min-height: var(--touch-target);
 }
 
+/* Refined global select baseline across all pages — compact, neat, and touch-ready */
+select {
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--charcoal);
+    background-color: var(--cream);
+    border: 1.5px solid var(--kraft-dark);
+    border-radius: 8px;
+    padding: 9px 34px 9px 12px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+select:hover {
+    border-color: var(--kraft-darker);
+}
+
+/* Warm, themed dropdown option styling */
+select option {
+    background-color: var(--ivory);
+    color: var(--ink-navy);
+    font-family: inherit;
+    padding: 8px 12px;
+}
+
 input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--ink-navy);
     background: var(--ivory);
     box-shadow: 0 0 0 3px rgba(26, 35, 50, 0.08);
+}
+
+/* =========================================
+   FINORA CUSTOM SELECT DROPDOWN COMPONENT
+   ========================================= */
+
+/* Visually hide native select while preserving accessibility and form submission */
+.finora-native-select-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.finora-select-container {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.finora-select-trigger {
+    width: 100%;
+    min-height: 42px;
+    height: 42px;
+    padding: 0 14px;
+    background-color: var(--cream);
+    border: 1.5px solid var(--kraft-dark);
+    border-radius: 8px;
+    color: var(--charcoal);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+    text-align: left;
+}
+
+.finora-select-trigger:hover {
+    border-color: var(--kraft-darker);
+    background-color: var(--cream-light);
+}
+
+.finora-select-container.is-open .finora-select-trigger,
+.finora-select-trigger:focus-visible {
+    border-color: var(--ink-navy);
+    background-color: var(--ivory);
+    box-shadow: 0 0 0 3px rgba(26, 35, 50, 0.08);
+}
+
+.finora-select-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+.finora-select-label.is-placeholder {
+    color: var(--warm-gray);
+    font-weight: 400;
+}
+
+.finora-select-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--warm-gray);
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), color 200ms ease;
+    flex-shrink: 0;
+}
+
+.finora-select-container.is-open .finora-select-arrow {
+    transform: rotate(180deg);
+    color: var(--ink-navy);
+}
+
+.finora-select-dropdown {
+    /* Position is set dynamically by JS (portal pattern) */
+    position: fixed;
+    z-index: 99999;
+    background: var(--ivory);
+    border: 1.5px solid var(--kraft-dark);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px -4px rgba(26, 35, 50, 0.2), 0 4px 12px -2px rgba(26, 35, 50, 0.1);
+    box-sizing: border-box;
+    padding: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.98);
+    transition: opacity 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1), visibility 160ms;
+    pointer-events: none;
+}
+
+.finora-select-container.is-dropup .finora-select-dropdown {
+    /* dropup animation — JS handles actual top position */
+    transform: translateY(6px) scale(0.98);
+}
+
+.finora-select-dropdown.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.finora-select-options-list {
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Subtle scrollbar for options list */
+.finora-select-options-list::-webkit-scrollbar {
+    width: 6px;
+}
+.finora-select-options-list::-webkit-scrollbar-thumb {
+    background: var(--kraft-dark);
+    border-radius: 4px;
+}
+
+.finora-select-option {
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--charcoal);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    transition: background 140ms ease, color 140ms ease;
+    user-select: none;
+}
+
+.finora-select-option:hover {
+    background: rgba(217, 197, 165, 0.35);
+    color: var(--ink-navy);
+}
+
+.finora-select-option.is-selected {
+    background: var(--ink-navy);
+    color: var(--cream-light);
+    font-weight: 600;
+}
+
+.finora-select-option-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* On desktop, allow options to show full text without truncation */
+@media (min-width: 769px) {
+    .finora-select-option-text {
+        overflow: visible;
+        text-overflow: unset;
+        white-space: nowrap;
+    }
+}
+
+.finora-select-option-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-gold);
+    flex-shrink: 0;
+}
+
+/* Form-select specific styling when in filter / table headers */
+.finora-select-container.is-form-select .finora-select-trigger {
+    background-color: var(--cream-light);
+    border: 1px solid var(--kraft-dark);
+    font-size: 13.5px;
+    height: 38px;
+    min-height: 38px;
+}
+
+@media (max-width: 480px) {
+    .finora-select-trigger {
+        min-height: 40px;
+        height: 40px;
+        font-size: 13px;
+        padding: 0 12px;
+    }
+    
+    .finora-select-option {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+}
+
+/* =========================================
+   FINORA CUSTOM DATE PICKER COMPONENT
+   ========================================= */
+
+/* Visually hide native date input while preserving form submission and validation */
+.finora-native-date-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.finora-datepicker-container {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.finora-datepicker-trigger {
+    width: 100%;
+    min-height: 42px;
+    height: 42px;
+    padding: 0 14px;
+    background-color: var(--cream);
+    border: 1.5px solid var(--kraft-dark);
+    border-radius: 8px;
+    color: var(--charcoal);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+    text-align: left;
+}
+
+.finora-datepicker-trigger:hover {
+    border-color: var(--kraft-darker);
+    background-color: var(--cream-light);
+}
+
+.finora-datepicker-container.is-open .finora-datepicker-trigger,
+.finora-datepicker-trigger:focus-visible {
+    border-color: var(--ink-navy);
+    background-color: var(--ivory);
+    box-shadow: 0 0 0 3px rgba(26, 35, 50, 0.08);
+}
+
+.finora-datepicker-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+.finora-datepicker-label.is-placeholder {
+    color: var(--warm-gray);
+    font-weight: 400;
+}
+
+.finora-datepicker-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--warm-gray);
+    transition: color 200ms ease;
+    flex-shrink: 0;
+}
+
+.finora-datepicker-container.is-open .finora-datepicker-icon {
+    color: var(--ink-navy);
+}
+
+.finora-datepicker-dropdown {
+    position: fixed;
+    z-index: 999999;
+    width: 286px;
+    min-width: 286px;
+    max-width: 310px;
+    background: var(--ivory);
+    border: 1.5px solid var(--kraft-dark);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px -4px rgba(26, 35, 50, 0.2), 0 4px 12px -2px rgba(26, 35, 50, 0.1);
+    box-sizing: border-box;
+    padding: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px) scale(0.99);
+    transition: opacity 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1), visibility 160ms;
+    pointer-events: none;
+}
+
+.finora-datepicker-container.is-dropup .finora-datepicker-dropdown {
+    transform: translateY(4px) scale(0.99);
+}
+
+.finora-datepicker-dropdown.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* Calendar Header */
+.finora-dp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.finora-dp-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-navy);
+    letter-spacing: 0.2px;
+}
+
+.finora-dp-nav-btn {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--kraft-dark);
+    border-radius: 6px;
+    background: var(--cream);
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease;
+    padding: 0;
+}
+
+.finora-dp-nav-btn:hover {
+    background: var(--cream-light);
+    border-color: var(--kraft-darker);
+    color: var(--ink-navy);
+}
+
+/* Weekday header */
+.finora-dp-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.finora-dp-weekdays span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--warm-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 0;
+}
+
+/* Days Grid */
+.finora-dp-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-bottom: 12px;
+}
+
+.finora-dp-day {
+    aspect-ratio: 1;
+    width: 100%;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--charcoal);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+    padding: 0;
+}
+
+.finora-dp-day:hover:not(.is-selected) {
+    background: rgba(217, 197, 165, 0.4);
+    color: var(--ink-navy);
+}
+
+.finora-dp-day.is-today:not(.is-selected) {
+    border: 1.5px solid var(--gold-dark);
+    font-weight: 600;
+    color: var(--ink-navy);
+}
+
+.finora-dp-day.is-selected {
+    background: var(--ink-navy);
+    color: var(--cream-light);
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(26, 35, 50, 0.2);
+}
+
+.finora-dp-day.is-other-month {
+    color: rgba(138, 134, 128, 0.38);
+}
+
+/* Footer */
+.finora-dp-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px dashed var(--kraft-dark);
+}
+
+.finora-dp-footer-btn {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.finora-dp-footer-btn.today {
+    color: var(--ink-navy);
+    background: rgba(61, 90, 128, 0.1);
+}
+
+.finora-dp-footer-btn.today:hover {
+    background: rgba(61, 90, 128, 0.18);
+}
+
+.finora-dp-footer-btn.clear {
+    color: var(--warm-gray);
+}
+
+.finora-dp-footer-btn.clear:hover {
+    color: var(--terracotta);
+    background: rgba(184, 80, 66, 0.08);
+}
+
+@media (max-width: 480px) {
+    .finora-datepicker-trigger {
+        min-height: 40px;
+        height: 40px;
+        font-size: 13px;
+        padding: 0 12px;
+    }
+
+    .finora-datepicker-dropdown {
+        max-width: 100%;
+        padding: 12px;
+    }
+
+    .finora-dp-day {
+        min-height: 30px;
+        font-size: 12.5px;
+    }
+}
+
+.date-inputs .finora-datepicker-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.char-counter-bottom {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--warm-gray);
+    margin-top: 5px;
+    letter-spacing: 0.3px;
+    transition: color 150ms ease;
+    user-select: none;
+}
+
+.char-counter-bottom.is-limit {
+    color: var(--terracotta);
+    font-weight: 600;
 }
 
 label {
@@ -1212,10 +2191,17 @@ label {
     gap: var(--space-lg);
 }
 
-/* Mobile grid collapse */
+/* Mobile grid collapse — generic utility grids collapse at 768px.
+   Note: .summary-grid on the dashboard is managed by dashboard.css for fine-grained
+   tablet behaviour (2-col). Only collapse it here at 480px as a fallback. */
 @media (max-width: 768px) {
     .grid-2,
-    .grid-3,
+    .grid-3 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
     .summary-grid {
         grid-template-columns: 1fr !important;
     }
@@ -1285,4 +2271,240 @@ label {
     .paper-texture {
         display: none;
     }
+}
+
+/* =========================================
+   FINORA GLOBAL MOTION SYSTEM
+   ========================================= */
+
+/* Page entrance motion */
+[data-motion="enter"] {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+[data-motion="enter"].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    will-change: auto;
+}
+
+/* Scroll reveal motion */
+[data-motion="reveal"],
+[data-motion="reveal-scale"] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-motion="reveal"].in-view,
+[data-motion="reveal-scale"].in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+[data-motion="reveal-scale"] {
+    transform: translateY(20px) scale(0.98);
+}
+
+[data-motion="reveal-scale"].in-view {
+    transform: translateY(0) scale(1);
+}
+
+/* List stagger motion */
+/* CRITICAL: Transaction rows must be visible by default for financial data integrity */
+[data-motion-stagger] > * {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Only hide elements when motion system is ready */
+[data-motion-stagger].motion-ready > * {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-motion-stagger].motion-ready > *.is-visible,
+[data-motion-stagger] > *.is-visible,
+[data-motion-stagger].motion-ready > .empty-state,
+[data-motion-stagger] > .empty-state {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Enhanced button interactions */
+.btn {
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 180ms ease,
+                background-color 180ms ease,
+                border-color 180ms ease;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled),
+.btn.is-pressed:not(:disabled) {
+    transform: translateY(1px);
+    transition-duration: 80ms;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Enhanced input/select focus */
+.form-group.is-focused label,
+.filter-group.is-focused label,
+.select-group.is-focused label {
+    color: var(--muted-gold);
+    transform: translateY(-1px);
+    transition: color 200ms ease, transform 200ms ease;
+}
+
+/* Navigation icon micro-interactions */
+.menu-item:hover .menu-icon,
+.drawer-nav-item:hover .menu-icon {
+    transform: translateX(2px) scale(1.06);
+    transition: transform 180ms var(--ease-nav-item);
+}
+
+.bottom-nav-item:hover:not(.active) .bottom-nav-icon {
+    transform: translateY(-1px) scale(1.06);
+    transition: transform 180ms var(--ease-nav-item);
+}
+
+.menu-icon,
+.drawer-nav-item .menu-icon,
+.bottom-nav-icon {
+    transition: transform 200ms var(--ease-nav-item);
+}
+
+/* Card hover enhancements */
+.summary-card,
+.action-card,
+.template-row {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 220ms ease;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    [data-motion="enter"],
+    [data-motion="reveal"] {
+        transition-duration: 400ms;
+    }
+    
+    [data-motion-stagger].motion-ready > * {
+        transition-duration: 350ms;
+    }
+}
+
+@media (max-width: 480px) {
+    [data-motion="enter"] {
+        transform: translateY(8px);
+    }
+    
+    [data-motion="reveal"] {
+        transform: translateY(12px);
+    }
+}
+
+/* =========================================
+   PAGE TRANSITION
+   Very subtle — 200ms fade + 6px upward lift.
+   Applied via JS class on page load.
+   Does not intercept navigation or forms.
+   ========================================= */
+.page-enter {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+.page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+        opacity 240ms var(--ease-active),
+        transform 240ms var(--ease-drawer);
+}
+
+/* Reduced motion overrides */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    [data-motion],
+    [data-motion-stagger] > * {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    
+    .btn:hover,
+    .summary-card:hover,
+    .action-card:hover,
+    .template-row:hover,
+    .menu-item:hover .menu-icon {
+        transform: none !important;
+    }
+
+    /* Navigation: keep functional, strip movement */
+    .drawer,
+    .drawer-overlay,
+    .drawer-nav-item,
+    .menu-item,
+    .bottom-nav-item,
+    .bottom-nav-item::before,
+    .bottom-nav-item .bottom-nav-icon,
+    .hamburger,
+    .hamburger-line,
+    .drawer-close {
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+    }
+
+    .drawer.is-open {
+        transform: translateX(0) !important;
+    }
+
+    .page-enter,
+    .page-enter-active {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+/* =========================================
+   CHARACTER COUNTER (Keterangan field)
+   ========================================= */
+.char-counter-bottom {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 11px;
+    font-family: var(--font-body);
+    color: #a8a093;
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease;
+}
+
+.char-counter-bottom.is-limit {
+    color: #c0624a;
+    font-weight: 600;
 }

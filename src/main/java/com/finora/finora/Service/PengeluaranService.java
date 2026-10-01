@@ -77,14 +77,14 @@ public class PengeluaranService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "tanggal"));
 
         Page<Pengeluaran> result = pengeluaranRepository.findByFilters(userId, categoryId, startDate, endDate, pageable);
-        BigDecimal totalIncome = pengeluaranRepository.sumJumlahByFilters(userId, categoryId, startDate, endDate);
+        BigDecimal totalExpense = pengeluaranRepository.sumJumlahByFilters(userId, categoryId, startDate, endDate);
 
         Map<String, Object> response = new HashMap<>();
         response.put("content", result.getContent());
         response.put("totalElements", result.getTotalElements());
         response.put("totalPages", result.getTotalPages());
         response.put("currentPage", result.getNumber());
-        response.put("totalIncome", totalIncome);
+        response.put("totalExpense", totalExpense);
         return response;
     }
 

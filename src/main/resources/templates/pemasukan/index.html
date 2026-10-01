@@ -33,29 +33,29 @@
         <aside th:replace="fragments/navigation :: sidebar"></aside>
 
         <main class="main-content">
-            <div class="page-header">
+            <div class="page-header" data-motion="enter" data-motion-delay="0">
                 <div class="index-page-header-actions">
                     <div>
-                        <p class="annotation">FINORA — INCOME LEDGER</p>
-                        <h1>Your income ledger</h1>
-                        <p class="subtitle">A calm record of every source of money that comes in.</p>
+                        <p class="annotation">FINORA — CATATAN PEMASUKAN</p>
+                        <h1>Pemasukan Anda</h1>
+                        <p class="subtitle">Catatan lengkap setiap sumber uang yang masuk.</p>
                     </div>
                     <div class="header-action-btns">
-                        <a href="/pemasukan/create" class="btn btn-primary">+ Add income</a>
-                        <button class="btn btn-secondary" id="btnUseTemplate">Gunakan Template</button>
+                        <a href="/pemasukan/create" class="btn btn-primary" data-motion="enter" data-motion-delay="100">+ Tambah pemasukan</a>
+                        <button class="btn btn-secondary" id="btnUseTemplate" data-motion="enter" data-motion-delay="140">Gunakan Template</button>
                     </div>
                 </div>
             </div>
 
-            <div class="total-income-summary">
-                <p class="label">total income</p>
+            <div class="total-income-summary" data-motion="enter" data-motion-delay="180">
+                <p class="label">total pemasukan</p>
                 <div class="value">
                     <span class="currency">Rp</span>
                     <span id="totalIncomeValue">0</span>
                 </div>
             </div>
 
-            <div class="filter-bar" id="filterBar">
+            <div class="filter-bar" id="filterBar" data-motion="enter" data-motion-delay="240">
                 <div class="filter-row">
                     <div class="filter-group">
                         <label for="filterCategory">Kategori</label>
@@ -64,15 +64,25 @@
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="filterDate">Tanggal</label>
+                        <label for="filterDate">Periode</label>
                         <select id="filterDate">
                             <option value="all">Semua tanggal</option>
-                            <option value="custom">Rentang tanggal</option>
+                            <option value="today">Hari ini</option>
+                            <option value="this_month">Bulan ini</option>
+                            <option value="last_month">Bulan lalu</option>
+                            <option value="custom">Rentang tanggal...</option>
                         </select>
-                        <div class="date-inputs" id="dateInputs" style="display:none;">
-                            <input type="date" id="startDate" />
-                            <span class="date-separator">—</span>
-                            <input type="date" id="endDate" />
+                    </div>
+                    <div class="filter-group filter-group-date-range" id="dateInputs" style="display:none;">
+                        <label>Rentang Tanggal</label>
+                        <div class="date-range-fields">
+                            <div class="date-field-col">
+                                <input type="date" id="startDate" placeholder="Mulai" />
+                            </div>
+                            <span class="date-separator">s/d</span>
+                            <div class="date-field-col">
+                                <input type="date" id="endDate" placeholder="Selesai" />
+                            </div>
                         </div>
                     </div>
                     <div class="filter-group">
@@ -90,16 +100,16 @@
                 <div class="active-filters" id="activeFilters" style="display:none;"></div>
             </div>
 
-            <div class="income-list-container">
+            <div class="income-list-container" data-motion="enter" data-motion-delay="280">
                 <div class="income-list-header">
-                    <span>Date</span>
-                    <span>Description</span>
-                    <span>Category</span>
-                    <span>Amount</span>
+                    <span>Tanggal</span>
+                    <span>Keterangan</span>
+                    <span>Kategori</span>
+                    <span>Jumlah</span>
                     <span></span>
                 </div>
 
-                <div class="income-list" id="incomeList">
+                <div class="income-list" id="incomeList" data-motion-stagger="35" data-motion-stagger-base="320" data-motion-stagger-max="8">
                     <!-- Income rows will be loaded here by JavaScript -->
                 </div>
             </div>
@@ -129,6 +139,9 @@
     </div>
 
     <script th:src="@{/js/navigation.js}"></script>
+    <script th:src="@{/js/custom-select.js}"></script>
+    <script th:src="@{/js/custom-datepicker.js}"></script>
+    <script th:src="@{/js/motion.js}"></script>
     <script>
         let currentParams = { page: 0, size: 10, sort: 'terbaru', category: '', startDate: '', endDate: '' };
         let allCategories = [];
@@ -164,30 +177,94 @@
             return parseFloat(value || 0).toLocaleString('id-ID');
         }
 
+        function getDateRangeByPreset(mode) {
+            var today = new Date();
+            function toISO(d) {
+                var y = d.getFullYear();
+                var m = String(d.getMonth() + 1).padStart(2, '0');
+                var day = String(d.getDate()).padStart(2, '0');
+                return y + '-' + m + '-' + day;
+            }
+            if (mode === 'today') {
+                var str = toISO(today);
+                return { start: str, end: str };
+            }
+            if (mode === 'this_month') {
+                var first = new Date(today.getFullYear(), today.getMonth(), 1);
+                var last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                return { start: toISO(first), end: toISO(last) };
+            }
+            if (mode === 'last_month') {
+                var first = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                var last = new Date(today.getFullYear(), today.getMonth(), 0);
+                return { start: toISO(first), end: toISO(last) };
+            }
+            return { start: '', end: '' };
+        }
+
         function getFilterValues() {
             var cat = document.getElementById('filterCategory').value;
             var dateMode = document.getElementById('filterDate').value;
             var sort = document.getElementById('filterSort').value;
-            var start = document.getElementById('startDate').value;
-            var end = document.getElementById('endDate').value;
+            var start = '';
+            var end = '';
+
+            if (dateMode === 'custom') {
+                start = document.getElementById('startDate').value;
+                end = document.getElementById('endDate').value;
+            } else if (dateMode !== 'all') {
+                var range = getDateRangeByPreset(dateMode);
+                start = range.start;
+                end = range.end;
+            }
+
             return {
                 page: 0,
                 size: currentParams.size,
                 sort: sort,
                 category: cat || '',
-                startDate: (dateMode === 'custom' && start) ? start : '',
-                endDate: (dateMode === 'custom' && end) ? end : ''
+                startDate: start || '',
+                endDate: end || ''
             };
         }
 
         function setFilterValues(params) {
             document.getElementById('filterCategory').value = params.category || '';
-            var hasDate = params.startDate || params.endDate;
-            document.getElementById('filterDate').value = hasDate ? 'custom' : 'all';
-            document.getElementById('dateInputs').style.display = hasDate ? 'flex' : 'none';
+            var hasDate = !!(params.startDate || params.endDate);
+            var dateMode = 'all';
+
+            if (hasDate) {
+                var todayRange = getDateRangeByPreset('today');
+                var thisMonthRange = getDateRangeByPreset('this_month');
+                var lastMonthRange = getDateRangeByPreset('last_month');
+
+                if (params.startDate === todayRange.start && params.endDate === todayRange.end) {
+                    dateMode = 'today';
+                } else if (params.startDate === thisMonthRange.start && params.endDate === thisMonthRange.end) {
+                    dateMode = 'this_month';
+                } else if (params.startDate === lastMonthRange.start && params.endDate === lastMonthRange.end) {
+                    dateMode = 'last_month';
+                } else {
+                    dateMode = 'custom';
+                }
+            }
+
+            var filterDateSelect = document.getElementById('filterDate');
+            filterDateSelect.value = dateMode;
+            var dateInputs = document.getElementById('dateInputs');
+            dateInputs.style.display = (dateMode === 'custom') ? 'flex' : 'none';
             document.getElementById('startDate').value = params.startDate || '';
             document.getElementById('endDate').value = params.endDate || '';
             document.getElementById('filterSort').value = params.sort || 'terbaru';
+        }
+
+        function formatDisplayDate(isoStr) {
+            if (!isoStr) return '';
+            var parts = isoStr.split('-');
+            if (parts.length !== 3) return isoStr;
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            var mIdx = parseInt(parts[1], 10) - 1;
+            return parts[2] + ' ' + (months[mIdx] || parts[1]) + ' ' + parts[0];
         }
 
         function renderActiveFilters(params) {
@@ -200,19 +277,24 @@
                 chips.push('<span class="chip">Kategori: ' + catName + '</span>');
             }
             if (params.startDate && params.endDate) {
-                chips.push('<span class="chip">' + params.startDate + ' — ' + params.endDate + '</span>');
+                if (params.startDate === params.endDate) {
+                    chips.push('<span class="chip">Tanggal: ' + formatDisplayDate(params.startDate) + '</span>');
+                } else {
+                    chips.push('<span class="chip">Periode: ' + formatDisplayDate(params.startDate) + ' — ' + formatDisplayDate(params.endDate) + '</span>');
+                }
             } else if (params.startDate) {
-                chips.push('<span class="chip">Dari: ' + params.startDate + '</span>');
+                chips.push('<span class="chip">Dari: ' + formatDisplayDate(params.startDate) + '</span>');
             } else if (params.endDate) {
-                chips.push('<span class="chip">Sampai: ' + params.endDate + '</span>');
+                chips.push('<span class="chip">Sampai: ' + formatDisplayDate(params.endDate) + '</span>');
             }
-            if (params.sort) {
-                chips.push('<span class="chip">Urutan: ' + (params.sort === 'terbaru' ? 'Terbaru' : 'Terlama') + '</span>');
+            if (params.sort && params.sort !== 'terbaru') {
+                chips.push('<span class="chip">Urutan: Terlama</span>');
             }
             if (chips.length > 0) {
                 el.innerHTML = '<div class="chip-group">' + chips.join('') + '</div>';
                 el.style.display = 'block';
             } else {
+                el.innerHTML = '';
                 el.style.display = 'none';
             }
         }
@@ -244,19 +326,38 @@
                 var incomeData = data.content || [];
 
                 if (incomeData.length === 0) {
-                    incomeListEl.innerHTML = '<div class="empty-state"><p>No income recorded yet.</p><span>Start your income journal by adding your first entry.</span><a href="/pemasukan/create" class="btn btn-primary">Add income</a></div>';
+                    var hasActiveFilter = params.category || params.startDate || params.endDate;
+                    if (hasActiveFilter) {
+                        incomeListEl.innerHTML =
+                            '<div class="empty-state">' +
+                                '<p>Tidak ada pemasukan yang sesuai dengan filter.</p>' +
+                                '<span>Reset filter untuk melihat semua data.</span>' +
+                                '<button class="btn btn-primary" id="btnResetEmpty">Reset Filter</button>' +
+                            '</div>';
+                        var resetBtn = document.getElementById('btnResetEmpty');
+                        if (resetBtn) {
+                            resetBtn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                currentParams = { page: 0, size: 10, sort: 'terbaru', category: '', startDate: '', endDate: '' };
+                                setFilterValues(currentParams);
+                                loadIncome(currentParams);
+                            });
+                        }
+                    } else {
+                        incomeListEl.innerHTML = '<div class="empty-state"><p>Belum ada pemasukan tercatat.</p><span>Mulai catat sumber pemasukan Anda dengan menambahkan entri pertama.</span><a href="/pemasukan/create" class="btn btn-primary">Tambah pemasukan</a></div>';
+                    }
                 } else {
                     incomeListEl.innerHTML = '';
                     incomeData.forEach(function(income) {
                         var date = new Date(income.tanggal);
                         var dateStr = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
                         var row = document.createElement('div');
-                        row.className = 'income-row';
+                        row.className = 'income-row is-visible';
                         row.innerHTML = '<div class="income-date">' + dateStr + '</div>' +
                             '<div class="income-description">' + (income.keterangan || '-') + '</div>' +
-                            '<div class="income-category">' + (income.kategori?.nama || 'Uncategorized') + '</div>' +
+                            '<div class="income-category">' + (income.kategori?.nama || 'Tanpa kategori') + '</div>' +
                             '<div class="income-amount">+ Rp ' + formatIdr(income.jumlah) + '</div>' +
-                            '<div class="income-actions"><button class="delete-btn" data-id="' + income.id + '" aria-label="Delete income entry">Delete</button></div>';
+                            '<div class="income-actions"><button class="delete-btn" data-id="' + income.id + '" aria-label="Hapus entri pemasukan">Hapus</button></div>';
                         incomeListEl.appendChild(row);
                     });
 
@@ -289,7 +390,7 @@
                 if (paginationEl) {
                     paginationEl.classList.remove('loading');
                 }
-                incomeListEl.innerHTML = '<div class="empty-state"><p>Failed to load income data.</p><span>Please check your connection and try again.</span></div>';
+                incomeListEl.innerHTML = '<div class="empty-state"><p>Gagal memuat data pemasukan.</p><span>Periksa koneksi Anda dan coba lagi.</span></div>';
             }
         }
 
@@ -370,7 +471,17 @@
             setFilterValues(currentParams);
 
             document.getElementById('filterDate').addEventListener('change', function() {
-                document.getElementById('dateInputs').style.display = this.value === 'custom' ? 'flex' : 'none';
+                var isCustom = this.value === 'custom';
+                var dateInputs = document.getElementById('dateInputs');
+                dateInputs.style.display = isCustom ? 'flex' : 'none';
+                if (!isCustom && this.value !== 'all') {
+                    var range = getDateRangeByPreset(this.value);
+                    document.getElementById('startDate').value = range.start;
+                    document.getElementById('endDate').value = range.end;
+                } else if (this.value === 'all') {
+                    document.getElementById('startDate').value = '';
+                    document.getElementById('endDate').value = '';
+                }
             });
 
             document.getElementById('btnApplyFilter').addEventListener('click', function() {
@@ -514,7 +625,7 @@
                         throw new Error(errData?.message || 'Gagal menggunakan item template');
                     }
                     closeTemplateModal();
-                    loadIncome(currentParams);
+                    await loadIncome(currentParams);
                     var keterangan = '';
                     try {
                         var res2 = await fetch('/pemasukan/templates');

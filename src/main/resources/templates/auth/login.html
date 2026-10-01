@@ -10,73 +10,55 @@
     <title>Login — Finora</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" th:href="@{/css/auth.css?v=4}">
+    <link rel="stylesheet" th:href="@{/css/auth.css?v=6}">
 </head>
 
 <body>
 
-    <div class="auth-wrapper">
-        <div class="auth-split-card">
-            <!-- Left Side: Brand Panel -->
-            <div class="auth-brand-side">
-                <div class="brand-header">
-                    <div class="brand-logo">
-                        <img th:src="@{/img/finora-logo.svg}" alt="Finora" />
-                    </div>
-                    <span class="brand-name">Finora</span>
-                </div>
+    <div class="auth-card">
+        <div class="auth-card-header">
+            <div class="header-logo">
+                <img th:src="@{/img/finora-logo.svg}" alt="Finora" />
+            </div>
+            <span class="header-brand-name">Finora</span>
+        </div>
 
-                <div class="brand-content">
-                    <p class="brand-tagline">Personal Finance, Simplified</p>
-                    <h2 class="brand-title">Your money,<br><span>clearly accounted for.</span></h2>
-                    <p class="brand-description">A calm place to keep track of your finances.</p>
-                    <div class="brand-accent"></div>
-                </div>
+        <div class="auth-card-body">
+            <p class="eyebrow">Sign In</p>
+            <h1 class="form-title">Welcome back</h1>
+            <p class="form-subtitle">Sign in to manage your finances.</p>
 
-                <div class="brand-footer">
-                    <span>Need help?</span>
-                    <a href="/">Back to Home &rarr;</a>
-                </div>
+            <!-- Notifications -->
+            <div th:if="${error}" class="alert-box alert-error">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span th:text="${error}">Username or password is incorrect.</span>
             </div>
 
-            <!-- Right Side: Login Form -->
-            <div class="auth-form-side">
-                <div class="form-header">
-                    <p class="form-eyebrow">Sign In</p>
-                    <h1>Welcome back</h1>
-                    <p>Manage your finances with clarity and ease.</p>
-                </div>
+            <div th:if="${message}" class="alert-box alert-info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span th:text="${message}">You have successfully logged out.</span>
+            </div>
 
-                <!-- Notifications -->
-                <div th:if="${error}" class="alert-box alert-error">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <span th:text="${error}">Username or password is incorrect.</span>
-                </div>
+            <div th:if="${success}" class="alert-box alert-success">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span th:text="${success}">Registration successful! Please sign in.</span>
+            </div>
 
-                <div th:if="${message}" class="alert-box alert-info">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    <span th:text="${message}">You have successfully logged out.</span>
-                </div>
-
-                <div th:if="${success}" class="alert-box alert-success">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                    <span th:text="${success}">Registration successful! Please sign in.</span>
-                </div>
-
-                <!-- Form -->
-                <form th:action="@{/login}" method="post" class="auth-form">
-                    <div class="form-group">
+            <!-- Form -->
+            <form th:action="@{/login}" method="post" class="auth-form">
+                <div class="auth-field">
+                    <div class="auth-field-enter">
                         <label for="username">Username or Email</label>
                         <div class="input-wrapper">
                             <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -86,8 +68,10 @@
                             <input type="text" id="username" name="username" placeholder="Enter username or email" required autofocus />
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-group">
+                <div class="auth-field">
+                    <div class="auth-field-enter">
                         <label for="password">Password</label>
                         <div class="input-wrapper">
                             <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -95,47 +79,34 @@
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </svg>
                             <input type="password" id="password" name="password" placeholder="Enter your password" required />
-                            <button type="button" class="btn-toggle-pwd" onclick="togglePassword(this)" aria-label="Toggle password visibility" aria-pressed="false">
+                            <button type="button" class="btn-toggle-pwd" aria-label="Toggle password visibility" aria-pressed="false">
                                 <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
-                                <svg class="eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                                <svg class="eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                                     <line x1="1" y1="1" x2="23" y2="23"></line>
                                 </svg>
                             </button>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn-submit">
-                        <span>Sign In</span>
-                    </button>
-                </form>
-
-                <div class="form-switch-prompt">
-                    <span>Don't have an account?</span>
-                    <a th:href="@{/register}">Register</a>
                 </div>
+
+                <button type="submit" class="btn-submit">
+                    <span class="btn-text">Sign In</span>
+                    <span class="spinner"></span>
+                </button>
+            </form>
+
+            <div class="form-switch-prompt">
+                <span>Don't have an account?</span>
+                <a th:href="@{/register}">Register</a>
             </div>
         </div>
     </div>
 
-    <script>
-        function togglePassword(btn) {
-            const input = btn.previousElementSibling;
-            if (!input || input.tagName !== 'INPUT') return;
-            const isPassword = input.type === 'password';
-            input.type = isPassword ? 'text' : 'password';
-            btn.setAttribute('aria-pressed', String(isPassword));
-            const eyeOpen = btn.querySelector('.eye-open');
-            const eyeClosed = btn.querySelector('.eye-closed');
-            if (eyeOpen && eyeClosed) {
-                eyeOpen.style.display = isPassword ? 'none' : 'inline';
-                eyeClosed.style.display = isPassword ? 'inline' : 'none';
-            }
-        }
-    </script>
+    <script th:src="@{/js/password-toggle.js}"></script>
 </body>
 
 </html>

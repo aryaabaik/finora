@@ -296,22 +296,38 @@
 
 /* Logout mini card */
 .sidebar-action-card {
-    margin-top: 18px;
     background: var(--ivory, #FFFCF5);
     border: 1px solid rgba(168, 93, 63, 0.25);
-    border-radius: 14px;
-    padding: 18px 20px;
+    border-radius: 16px;
+    padding: 22px 28px;
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: 0 2px 4px rgba(26, 35, 50, 0.03);
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow:
+        0 2px 4px rgba(26, 35, 50, 0.03),
+        0 8px 24px -4px rgba(26, 35, 50, 0.05);
+    animation: settingsFadeIn 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.sidebar-action-card p {
+.logout-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.logout-card-text h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-navy, #1A2332);
+    margin: 0;
+}
+
+.logout-card-text p {
     font-size: 13px;
     color: var(--warm-gray, #8A8680);
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.45;
 }
 
 .btn-logout-alt {
@@ -319,20 +335,24 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 9px 16px;
+    padding: 10px 20px;
     background: transparent;
     color: var(--terracotta, #A85D3F);
     border: 1.5px solid rgba(168, 93, 63, 0.35);
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 13.5px;
     font-weight: 600;
     text-decoration: none;
+    white-space: nowrap;
     transition: all 200ms ease;
+    flex-shrink: 0;
 }
 
 .btn-logout-alt:hover {
     background: rgba(168, 93, 63, 0.08);
     border-color: var(--terracotta, #A85D3F);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 93, 63, 0.12);
 }
 
 /* ============================================
@@ -589,5 +609,19 @@
 
     .settings-card {
         padding: 24px 18px;
+    }
+
+    .sidebar-action-card {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: left;
+        gap: 14px;
+        padding: 20px 18px;
+    }
+
+    .btn-logout-alt {
+        width: 100%;
+        padding: 12px 18px;
+        min-height: var(--touch-target, 44px);
     }
 }

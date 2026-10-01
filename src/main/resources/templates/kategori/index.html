@@ -146,18 +146,38 @@
             text-transform: uppercase;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 14px;
             border: 1.5px solid var(--kraft-dark);
             border-radius: 8px;
             background: var(--cream);
-            font-size: 16px;
+            font-size: 14px;
             color: var(--charcoal);
             font-family: 'Inter', sans-serif;
             transition: all 0.15s ease;
             outline: none;
+            box-sizing: border-box;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 10px 36px 10px 14px;
+            border: 1.5px solid var(--kraft-dark);
+            border-radius: 8px;
+            background-color: var(--cream);
+            font-size: 14px;
+            color: var(--charcoal);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s ease;
+            outline: none;
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8680' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            cursor: pointer;
         }
 
         .form-group input:focus,
@@ -326,6 +346,7 @@
     <div id="notification" class="notification"></div>
 
     <script th:src="@{/js/navigation.js}"></script>
+    <script th:src="@{/js/custom-select.js}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
             const incomeListEl = document.getElementById('incomeKategoriList');

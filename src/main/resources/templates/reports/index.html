@@ -22,17 +22,32 @@
         <main class="main-content">
 
             <!-- Header -->
-            <div class="page-header">
-                <div class="header-meta">
-                    <span class="annotation">LAPORAN KEUANGAN</span>
-                    <span class="gold-line"></span>
+            <div class="page-header page-header--with-action" data-motion="enter" data-motion-delay="0">
+                <div class="page-header-left">
+                    <div class="header-meta">
+                        <span class="annotation">LAPORAN KEUANGAN</span>
+                        <span class="gold-line"></span>
+                    </div>
+                    <h1>Laporan Keuangan</h1>
+                    <p class="subtitle">Memahami bagaimana uang masuk, digunakan, dan tersisa pada periode tertentu.</p>
                 </div>
-                <h1>Laporan Keuangan</h1>
-                <p class="subtitle">Memahami bagaimana uang masuk, digunakan, dan tersisa pada periode tertentu.</p>
+                <div class="page-header-actions">
+                    <a th:href="@{/laporan/export(year=${selectedYear},month=${selectedMonth})}"
+                       class="report-export-button"
+                       aria-label="Export laporan Excel periode ini">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Export Excel
+                    </a>
+                </div>
             </div>
 
             <!-- Filter -->
-            <form th:action="@{/laporan}" method="get" class="filter-section">
+            <form th:action="@{/laporan}" method="get" class="filter-section" data-motion="enter" data-motion-delay="80">
                 <div class="select-group">
                     <label for="month">Bulan</label>
                     <select id="month" name="month" class="form-select">
@@ -45,7 +60,7 @@
                 <div class="select-group">
                     <label for="year">Tahun</label>
                     <select id="year" name="year" class="form-select">
-                        <option th:each="i : ${#numbers.sequence(selectedYear - 5, selectedYear)}"
+                        <option th:each="i : ${yearList != null ? yearList : #numbers.sequence(2020, 2027)}"
                                 th:value="${i}"
                                 th:text="${i}"
                                 th:selected="${i == selectedYear}"></option>
@@ -57,19 +72,19 @@
 
             <!-- Summary -->
             <div class="summary-row">
-                <div class="summary-card">
+                <div class="summary-card" data-motion="enter" data-motion-delay="140">
                     <span class="summary-label">Total Pemasukan</span>
                     <span class="summary-value income">Rp <span th:text="${reportData != null and reportData.totalPemasukan != null ? #numbers.formatInteger(reportData.totalPemasukan, 1, 'POINT') : '0'}">0</span></span>
                 </div>
-                <div class="summary-card">
+                <div class="summary-card" data-motion="enter" data-motion-delay="170">
                     <span class="summary-label">Total Pengeluaran</span>
                     <span class="summary-value expense">Rp <span th:text="${reportData != null and reportData.totalPengeluaran != null ? #numbers.formatInteger(reportData.totalPengeluaran, 1, 'POINT') : '0'}">0</span></span>
                 </div>
-                <div class="summary-card">
+                <div class="summary-card" data-motion="enter" data-motion-delay="200">
                     <span class="summary-label">Saldo Bersih</span>
                     <span class="summary-value balance" th:classappend="${reportData != null and reportData.saldo != null and reportData.saldo.signum() < 0 ? ' negative' : ''}">Rp <span th:text="${reportData != null and reportData.saldo != null ? #numbers.formatInteger(reportData.saldo, 1, 'POINT') : '0'}">0</span></span>
                 </div>
-                <div class="summary-card">
+                <div class="summary-card" data-motion="enter" data-motion-delay="230">
                     <span class="summary-label">Rasio</span>
                     <span class="summary-value ratio">
                         <span th:text="${(reportData != null and reportData.rasioFormatted != null) ? reportData.rasioFormatted : '0'}">0</span>%
@@ -92,7 +107,7 @@
             <div class="report-content" th:if="${not #lists.isEmpty(reportData['pemasukan']) or not #lists.isEmpty(reportData['pengeluaran'])}">
 
                 <!-- Arus Keuangan Chart -->
-                <section class="report-section chart-section">
+                <section class="report-section chart-section" data-motion="reveal">
                     <div class="chart-card large-chart">
                         <div class="chart-header">
                             <h3 class="chart-title">Arus Keuangan</h3>
@@ -105,7 +120,7 @@
                 </section>
 
                 <!-- Pengeluaran Kategori + Sumber Pemasukan -->
-                <section class="report-section category-section">
+                <section class="report-section category-section" data-motion="reveal">
                     <div class="two-column-grid">
                         <div class="chart-card">
                             <div class="chart-header">
@@ -235,22 +250,24 @@
                             <h3 class="chart-title">Detail Pemasukan</h3>
                             <p class="chart-subtitle">Daftar transaksi uang masuk pada periode ini</p>
                         </div>
-                        <div class="transaction-table-wrapper">
+
+                        <!-- Desktop Table -->
+                        <div class="transaction-table-wrapper desktop-only-table">
                             <table class="transaction-table">
                                 <thead>
                                     <tr>
                                         <th>Tanggal</th>
                                         <th>Kategori</th>
                                         <th>Keterangan</th>
-                                        <th>Jumlah</th>
+                                        <th class="col-amount">Jumlah</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="item : ${reportData['pemasukan']}">
-                                        <td th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</td>
-                                        <td th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</td>
+                                        <td class="col-date" th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</td>
+                                        <td><span class="badge-kategori" th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</span></td>
                                         <td th:text="${item.keterangan ?: '-'}">-</td>
-                                        <td class="text-income">Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></td>
+                                        <td class="text-income col-amount">Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(reportData['pemasukan'])}">
                                         <td colspan="4" class="empty-table-cell">Belum ada transaksi pemasukan pada periode ini</td>
@@ -258,6 +275,26 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Mobile Cards -->
+                        <div class="tx-card-list mobile-only-cards">
+                            <div th:each="item : ${reportData['pemasukan']}" class="tx-card tx-card--income">
+                                <div class="tx-card-top">
+                                    <div class="tx-card-left">
+                                        <span class="tx-card-keterangan" th:text="${item.keterangan ?: '-'}">-</span>
+                                        <span class="tx-card-meta">
+                                            <span class="badge-kategori" th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</span>
+                                            <span class="tx-card-date" th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</span>
+                                        </span>
+                                    </div>
+                                    <span class="tx-card-amount text-income">+Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></span>
+                                </div>
+                            </div>
+                            <div th:if="${#lists.isEmpty(reportData['pemasukan'])}" class="tx-card-empty">
+                                Belum ada transaksi pemasukan pada periode ini
+                            </div>
+                        </div>
+
                     </div>
                 </section>
 
@@ -268,22 +305,24 @@
                             <h3 class="chart-title">Detail Pengeluaran</h3>
                             <p class="chart-subtitle">Daftar transaksi uang keluar pada periode ini</p>
                         </div>
-                        <div class="transaction-table-wrapper">
+
+                        <!-- Desktop Table -->
+                        <div class="transaction-table-wrapper desktop-only-table">
                             <table class="transaction-table">
                                 <thead>
                                     <tr>
                                         <th>Tanggal</th>
                                         <th>Kategori</th>
                                         <th>Keterangan</th>
-                                        <th>Jumlah</th>
+                                        <th class="col-amount">Jumlah</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="item : ${reportData['pengeluaran']}">
-                                        <td th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</td>
-                                        <td th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</td>
+                                        <td class="col-date" th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</td>
+                                        <td><span class="badge-kategori" th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</span></td>
                                         <td th:text="${item.keterangan ?: '-'}">-</td>
-                                        <td class="text-expense">Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></td>
+                                        <td class="text-expense col-amount">Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(reportData['pengeluaran'])}">
                                         <td colspan="4" class="empty-table-cell">Belum ada transaksi pengeluaran pada periode ini</td>
@@ -291,6 +330,26 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Mobile Cards -->
+                        <div class="tx-card-list mobile-only-cards">
+                            <div th:each="item : ${reportData['pengeluaran']}" class="tx-card tx-card--expense">
+                                <div class="tx-card-top">
+                                    <div class="tx-card-left">
+                                        <span class="tx-card-keterangan" th:text="${item.keterangan ?: '-'}">-</span>
+                                        <span class="tx-card-meta">
+                                            <span class="badge-kategori" th:text="${item.kategori != null ? item.kategori.nama : '-'}">-</span>
+                                            <span class="tx-card-date" th:text="${#temporals.format(item.tanggal, 'dd MMM yyyy')}">-</span>
+                                        </span>
+                                    </div>
+                                    <span class="tx-card-amount text-expense">-Rp <span th:text="${#numbers.formatInteger(item.jumlah, 1, 'POINT')}">0</span></span>
+                                </div>
+                            </div>
+                            <div th:if="${#lists.isEmpty(reportData['pengeluaran'])}" class="tx-card-empty">
+                                Belum ada transaksi pengeluaran pada periode ini
+                            </div>
+                        </div>
+
                     </div>
                 </section>
 
@@ -307,6 +366,8 @@
     </div>
 
     <script th:src="@{/js/navigation.js}"></script>
+    <script th:src="@{/js/custom-select.js}"></script>
+    <script th:src="@{/js/motion.js}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
         var chartLabels = /*[[${reportData != null and reportData.chartData != null ? reportData.chartData.labels : {}}]]*/ [];

@@ -19,17 +19,17 @@
 
         <main class="main-content">
 
-            <div class="page-header">
+            <div class="page-header" data-motion="enter" data-motion-delay="0">
                 <div class="header-info">
                     <span class="annotation">TEMPLATE</span>
                     <h1>Template</h1>
                     <p class="subtitle">Gunakan kembali transaksi yang sering kamu buat.</p>
                 </div>
-                <a th:href="@{/template/create}" class="btn btn-primary">+ Buat Template</a>
+                <a th:href="@{/template/create}" class="btn btn-primary" data-motion="enter" data-motion-delay="100">+ Buat Template</a>
             </div>
 
             <!-- Empty State -->
-            <div th:if="${#lists.isEmpty(templates)}" class="empty-state-container">
+            <div th:if="${#lists.isEmpty(templates)}" class="empty-state-container" data-motion="enter" data-motion-delay="160">
                 <div class="empty-icon">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -42,7 +42,7 @@
             </div>
 
             <!-- Template List -->
-            <div th:if="${not #lists.isEmpty(templates)}" class="template-list-container">
+            <div th:if="${not #lists.isEmpty(templates)}" class="template-list-container" data-motion-stagger="45" data-motion-stagger-base="180" data-motion-stagger-max="6">
                 <div th:each="template : ${templates}" class="template-row">
 
                     <div class="template-info">
@@ -83,6 +83,7 @@
     </div>
 
     <script th:src="@{/js/navigation.js}"></script>
+    <script th:src="@{/js/motion.js}"></script>
     <script>
         function formatRupiah(amount) {
             if (!amount || amount === 0) return 'Rp0';

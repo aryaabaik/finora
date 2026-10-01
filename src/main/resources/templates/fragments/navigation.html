@@ -29,6 +29,24 @@
                 <span class="bottom-nav-label">Masuk</span>
             </a>
 
+            <!-- Center Floating Add Button -->
+            <div class="nav-add-wrapper">
+                <button 
+                    type="button"
+                    id="navAddButton"
+                    class="nav-add-button"
+                    aria-label="Tambah transaksi"
+                    aria-expanded="false"
+                    aria-controls="navAddMenu">
+                    <span class="nav-add-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+
             <a href="/pengeluaran/page" class="bottom-nav-item" data-active="pengeluaran">
                 <span class="bottom-nav-icon">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -50,27 +68,200 @@
                 </span>
                 <span class="bottom-nav-label">Laporan</span>
             </a>
-
-            <a href="/template" class="bottom-nav-item" data-active="template">
-                <span class="bottom-nav-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </span>
-                <span class="bottom-nav-label">Template</span>
-            </a>
-
-            <a href="/auth/settings" class="bottom-nav-item" data-active="settings">
-                <span class="bottom-nav-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1-2-2z"></path>
-                    </svg>
-                </span>
-                <span class="bottom-nav-label">Atur</span>
-            </a>
         </div>
+
+        <!-- Add Action Menu Overlay -->
+        <div class="nav-add-overlay" id="navAddOverlay" aria-hidden="true"></div>
+
+        <!-- Add Action Menu (Luxury Popover Card) -->
+        <div 
+            class="nav-add-menu" 
+            id="navAddMenu"
+            role="menu"
+            aria-label="Pilih jenis transaksi"
+            aria-hidden="true">
+
+            <div class="nav-add-menu-header">
+                <span class="nav-add-menu-tag">CATAT TRANSAKSI</span>
+                <p class="nav-add-menu-title">Pilih jenis transaksi</p>
+            </div>
+
+            <div class="nav-add-menu-items">
+                <a 
+                    href="/pemasukan/create"
+                    class="nav-add-action nav-add-income"
+                    role="menuitem">
+                    <span class="nav-add-action-badge income-badge" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                            <polyline points="5 12 12 5 19 12"></polyline>
+                        </svg>
+                    </span>
+                    <span class="nav-add-action-info">
+                        <strong class="nav-add-action-name">Tambah Pemasukan</strong>
+                        <span class="nav-add-action-desc">Gaji, transfer, atau penjualan</span>
+                    </span>
+                    <span class="nav-add-action-arrow" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </span>
+                </a>
+
+                <a 
+                    href="/pengeluaran/create"
+                    class="nav-add-action nav-add-expense"
+                    role="menuitem">
+                    <span class="nav-add-action-badge expense-badge" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <polyline points="19 12 12 19 5 12"></polyline>
+                        </svg>
+                    </span>
+                    <span class="nav-add-action-info">
+                        <strong class="nav-add-action-name">Tambah Pengeluaran</strong>
+                        <span class="nav-add-action-desc">Belanja, tagihan, atau kebutuhan</span>
+                    </span>
+                    <span class="nav-add-action-arrow" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Add Menu Controller Script -->
+        <script>
+        (function() {
+            'use strict';
+            
+            const addMenuState = {
+                isOpen: false,
+                prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            };
+            
+            const addMenuElements = {
+                button: null,
+                menu: null,
+                overlay: null,
+                actions: []
+            };
+            
+            function initAddMenu() {
+                addMenuElements.button = document.getElementById('navAddButton');
+                addMenuElements.menu = document.getElementById('navAddMenu');
+                addMenuElements.overlay = document.getElementById('navAddOverlay');
+                addMenuElements.actions = document.querySelectorAll('.nav-add-action');
+                
+                if (!addMenuElements.button || !addMenuElements.menu) return;
+                
+                detectReducedMotion();
+                bindAddMenuEvents();
+            }
+            
+            function detectReducedMotion() {
+                const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+                addMenuState.prefersReducedMotion = mediaQuery.matches;
+                
+                mediaQuery.addEventListener('change', function(e) {
+                    addMenuState.prefersReducedMotion = e.matches;
+                });
+            }
+            
+            function bindAddMenuEvents() {
+                // Button click
+                addMenuElements.button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleAddMenu();
+                });
+                
+                // Overlay click
+                if (addMenuElements.overlay) {
+                    addMenuElements.overlay.addEventListener('click', function() {
+                        closeAddMenu();
+                    });
+                }
+                
+                // Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && addMenuState.isOpen) {
+                        closeAddMenu();
+                    }
+                });
+            }
+            
+            function toggleAddMenu() {
+                if (addMenuState.isOpen) {
+                    closeAddMenu();
+                } else {
+                    openAddMenu();
+                }
+            }
+            
+            function openAddMenu() {
+                if (addMenuState.isOpen) return;
+                
+                addMenuState.isOpen = true;
+                
+                // Update button
+                addMenuElements.button.setAttribute('aria-expanded', 'true');
+                addMenuElements.button.classList.add('is-open');
+                
+                // Show overlay
+                addMenuElements.overlay.classList.add('is-open');
+                addMenuElements.overlay.setAttribute('aria-hidden', 'false');
+                
+                // Show menu
+                addMenuElements.menu.classList.add('is-open');
+                addMenuElements.menu.setAttribute('aria-hidden', 'false');
+                
+                // Stagger actions
+                if (!addMenuState.prefersReducedMotion) {
+                    addMenuElements.actions.forEach(function(action, index) {
+                        setTimeout(function() {
+                            action.classList.add('is-visible');
+                        }, index * 50);
+                    });
+                } else {
+                    addMenuElements.actions.forEach(function(action) {
+                        action.classList.add('is-visible');
+                    });
+                }
+            }
+            
+            function closeAddMenu() {
+                if (!addMenuState.isOpen) return;
+                
+                addMenuState.isOpen = false;
+                
+                // Update button
+                addMenuElements.button.setAttribute('aria-expanded', 'false');
+                addMenuElements.button.classList.remove('is-open');
+                
+                // Hide overlay
+                addMenuElements.overlay.classList.remove('is-open');
+                addMenuElements.overlay.setAttribute('aria-hidden', 'true');
+                
+                // Hide menu
+                addMenuElements.menu.classList.remove('is-open');
+                addMenuElements.menu.setAttribute('aria-hidden', 'true');
+                
+                // Remove visibility from actions
+                addMenuElements.actions.forEach(function(action) {
+                    action.classList.remove('is-visible');
+                });
+            }
+            
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initAddMenu);
+            } else {
+                initAddMenu();
+            }
+        })();
+        </script>
     </nav>
 
     <!-- Mobile Header (visible only on mobile/tablet) -->
@@ -82,8 +273,8 @@
             </a>
 
             <div class="mobile-header-right">
-                <!-- Profile Avatar for Mobile -->
-                <div class="mobile-profile" id="mobileProfile">
+                <!-- Profile Avatar for Mobile (links to Settings) -->
+                <a href="/auth/settings" class="mobile-profile" id="mobileProfile" aria-label="Pengaturan Profil">
                     <div class="mobile-profile-avatar">
                         <img th:if="${headerUser != null and headerUser.foto != null and !headerUser.foto.isEmpty()}"
                              th:src="@{'/uploads/profile/' + ${headerUser.foto}}"
@@ -93,7 +284,7 @@
                               class="mobile-profile-avatar-initial"
                               th:text="${headerUser != null and !#strings.isEmpty(headerUser.username) ? #strings.toUpperCase(#strings.substring(headerUser.username,0,1)) : 'U'}">U</span>
                     </div>
-                </div>
+                </a>
 
                 <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="drawer">
                     <span class="hamburger-line"></span>
