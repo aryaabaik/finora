@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" th:href="@{/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <link rel="stylesheet" th:href="@{/css/animations.css}">
+    <link rel="stylesheet" th:href="@{/css/micro-interactions.css}">
     <style>
         .page-header {
             margin-bottom: 32px;
@@ -279,6 +281,8 @@
 </head>
 
 <body>
+    <!-- Scroll Progress -->
+    <div data-scroll-progress style="position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6B8CAE, #C4A35A); z-index: 99999;"></div>
     <div class="paper-texture"></div>
 
     <div class="layout">
@@ -298,29 +302,29 @@
         <aside th:replace="fragments/navigation :: sidebar"></aside>
 
         <main class="main-content">
-            <div class="page-header">
+            <div class="page-header" data-motion="enter" data-motion-delay="0">
                 <p class="annotation">FINORA — CATEGORY MANAGER</p>
                 <h1>Kategori</h1>
                 <p class="subtitle">Organize your money, one category at a time.</p>
             </div>
 
             <div class="kategori-sections">
-                <div class="kategori-section income">
+                <div class="kategori-section income hover-lift" data-motion="enter" data-motion-delay="100">
                     <h2 class="kategori-section-title">Pemasukan</h2>
-                    <div class="kategori-list" id="incomeKategoriList">
-                        <div class="empty-state">Loading...</div>
+                    <div class="kategori-list" id="incomeKategoriList" data-motion-stagger="50">
+                        <div class="empty-state pulse">Loading...</div>
                     </div>
                 </div>
 
-                <div class="kategori-section expense">
+                <div class="kategori-section expense hover-lift" data-motion="enter" data-motion-delay="150">
                     <h2 class="kategori-section-title">Pengeluaran</h2>
-                    <div class="kategori-list" id="expenseKategoriList">
-                        <div class="empty-state">Loading...</div>
+                    <div class="kategori-list" id="expenseKategoriList" data-motion-stagger="50">
+                        <div class="empty-state pulse">Loading...</div>
                     </div>
                 </div>
             </div>
 
-            <div class="add-kategori-section">
+            <div class="add-kategori-section hover-lift" data-motion="reveal">
                 <h2 class="add-kategori-title">Tambah Kategori</h2>
                 <form id="addKategoriForm">
                     <div class="form-group">
@@ -347,6 +351,10 @@
 
     <script th:src="@{/js/navigation.js}"></script>
     <script th:src="@{/js/custom-select.js}"></script>
+    <script th:src="@{/js/motion.js}"></script>
+    <script th:src="@{/js/animations.js}"></script>
+    <script th:src="@{/js/ui-system.js}"></script>
+    <script th:src="@{/js/ux-enhancer.js}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
             const incomeListEl = document.getElementById('incomeKategoriList');
@@ -355,11 +363,17 @@
             const notificationEl = document.getElementById('notification');
 
             function showNotification(message, type = 'success') {
-                notificationEl.textContent = message;
-                notificationEl.className = 'notification show ' + type;
-                setTimeout(() => {
-                    notificationEl.classList.remove('show');
-                }, 3000);
+                if (window.FinoraUI && window.FinoraUI.toast) {
+                    if (type === 'success') FinoraUI.toast.success(message);
+                    else if (type === 'error') FinoraUI.toast.error(message);
+                    else FinoraUI.toast.info(message);
+                } else {
+                    notificationEl.textContent = message;
+                    notificationEl.className = 'notification show ' + type;
+                    setTimeout(() => {
+                        notificationEl.classList.remove('show');
+                    }, 3000);
+                }
             }
 
             async function loadKategori() {

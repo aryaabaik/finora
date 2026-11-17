@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finora Animation Demo - Test Semua Animasi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/micro-interactions.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FDF8F0;
+            color: #1A2332;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 64px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #8A8680;
+            font-size: 18px;
+            margin-bottom: 60px;
+        }
+        
+        .section {
+            margin-bottom: 80px;
+            padding: 40px;
+            background: #FFFCF5;
+            border-radius: 20px;
+            border: 1px solid rgba(217, 197, 165, 0.3);
+        }
+        
+        .section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 42px;
+            margin-bottom: 20px;
+            color: #1A2332;
+        }
+        
+        .section p {
+            color: #8A8680;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .demo-card {
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid rgba(217, 197, 165, 0.3);
+            text-align: center;
+            transition: all 300ms ease;
+        }
+        
+        .demo-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1A2332;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 999px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 200ms ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: #1A2332;
+            color: #FFFCF5;
+        }
+        
+        .btn-secondary {
+            background: #6B8CAE;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #6B7F59;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #A85D3F;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #C4A35A;
+            color: white;
+        }
+        
+        .demo-box {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6B8CAE, #C4A35A);
+            border-radius: 16px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .number-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: #6B8CAE;
+            margin: 20px 0;
+        }
+        
+        .particle-demo {
+            height: 300px;
+            background: linear-gradient(135deg, #1A2332, #243447);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        code {
+            background: rgba(107, 140, 174, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .feature-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #6B7F59;
+            color: white;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress -->
+    <div data-scroll-progress></div>
+    
+    <!-- Particle Background -->
+    <div data-particles="40" data-particle-color="rgba(107, 140, 174, 0.08)" 
+         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
+    
+    <div class="container" style="position: relative; z-index: 1;">
+        <h1 class="text-shimmer" data-motion="enter" data-motion-delay="0">🎨 Finora Animations</h1>
+        <p class="subtitle" data-motion="enter" data-motion-delay="100">
+            Test semua animasi yang keren dan maksimal!
+        </p>
+        
+        <!-- Toast Notifications -->
+        <section class="section" data-motion="reveal">
+            <h2>🔔 Toast Notifications</h2>
+            <p>Notifikasi cantik dengan 4 jenis berbeda</p>
+            
+            <div class="controls">
+                <button class="btn btn-success" data-ripple onclick="FinoraUI.toast.success('Yeay! Berhasil disimpan! 🎉')">
+                    Success Toast
+                </button>
+                <button class="btn btn-danger" data-ripple onclick="FinoraUI.toast.error('Oops! Terjadi kesalahan! ❌')">
+                    Error Toast
+                </button>
+                <button class="btn btn-warning" data-ripple onclick="FinoraUI.toast.warning('Hati-hati! Periksa lagi! ⚠️')">
+                    Warning Toast
+                </button>
+                <button class="btn btn-secondary" data-ripple onclick="FinoraUI.toast.info('Info penting untuk kamu! ℹ️')">
+                    Info Toast
+                </button>
+            </div>
+        </section>
+        
+        <!-- Loading States -->
+        <section class="section" data-motion="reveal">
+            <h2>⏳ Loading States</h2>
+            <p>Loading overlay dan progress bar yang smooth</p>
+            
+            <div class="controls">
+                <button class="btn btn-primary" data-ripple onclick="showLoading()">
+                    Show Loading
+                </button>
+                <button class="btn btn-primary" data-ripple onclick="showProgress()">
+                    Progress Bar
+                </button>
+            </div>
+        </section>
+        
+        <!-- Confirmation Dialog -->
+        <section class="section" data-motion="reveal">
+            <h2>💬 Confirmation Dialog</h2>
+            <p>Dialog konfirmasi yang elegant</p>
+            
+            <div class="controls">
+                <button class="btn btn-primary" data-ripple onclick="showConfirm()">
+                    Show Confirmation
+                </button>
+                <button class="btn btn-danger" data-ripple onclick="showDangerConfirm()">
+                    Danger Confirmation
+                </button>
+            </div>
+        </section>
+        
+        <!-- Ripple Effects -->
+        <section class="section" data-motion="reveal">
+            <h2>💧 Ripple Effects</h2>
+            <p>Material design ripple pada klik</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card hover-lift" data-ripple>
+                    <h3>Click Me!</h3>
+                    <p style="color: #8A8680;">Klik untuk lihat ripple</p>
+                </div>
+                <div class="demo-card hover-lift" data-ripple>
+                    <h3>Me Too!</h3>
+                    <p style="color: #8A8680;">Ripple di sini juga</p>
+                </div>
+                <div class="demo-card hover-lift" data-ripple>
+                    <h3>And Me!</h3>
+                    <p style="color: #8A8680;">Ripple effect keren</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Number Counter -->
+        <section class="section" data-motion="reveal">
+            <h2>🔢 Number Counter</h2>
+            <p>Animated counting untuk angka</p>
+            
+            <div class="number-display">
+                Rp <span id="counter1" data-counter data-counter-duration="2000">5000000</span>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-primary" data-ripple onclick="resetCounter()">
+                    Reset & Animate Again
+                </button>
+            </div>
+        </section>
+        
+        <!-- Magnetic Effect -->
+        <section class="section" data-motion="reveal">
+            <h2>🧲 Magnetic Hover</h2>
+            <p>Element mengikuti mouse saat hover</p>
+            
+            <div class="controls">
+                <button class="btn btn-primary" data-ripple data-magnetic="0.3">
+                    Magnetic Button (Hover Me)
+                </button>
+                <button class="btn btn-secondary" data-ripple data-magnetic="0.5">
+                    Strong Magnetic
+                </button>
+            </div>
+        </section>
+        
+        <!-- CSS Animations -->
+        <section class="section" data-motion="reveal">
+            <h2>✨ Pre-built Animations</h2>
+            <p>Animasi siap pakai dengan CSS classes</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>Float</h3>
+                    <div class="demo-box float">Float</div>
+                </div>
+                <div class="demo-card">
+                    <h3>Pulse</h3>
+                    <div class="demo-box pulse">Pulse</div>
+                </div>
+                <div class="demo-card">
+                    <h3>Bounce</h3>
+                    <div class="demo-box bounce">Bounce</div>
+                </div>
+                <div class="demo-card">
+                    <h3>Rotate</h3>
+                    <div class="demo-box rotate-slow">Rotate</div>
+                </div>
+                <div class="demo-card">
+                    <h3>Glow</h3>
+                    <div class="demo-box glow">Glow</div>
+                </div>
+                <div class="demo-card">
+                    <h3>Heartbeat</h3>
+                    <div class="demo-box heartbeat">❤️</div>
+                </div>
+            </div>
+            
+            <div class="controls" style="margin-top: 30px;">
+                <button class="btn btn-primary" data-ripple onclick="triggerAnimation('fade-in-up')">
+                    Fade In Up
+                </button>
+                <button class="btn btn-primary" data-ripple onclick="triggerAnimation('bounce-in')">
+                    Bounce In
+                </button>
+                <button class="btn btn-primary" data-ripple onclick="triggerAnimation('shake')">
+                    Shake
+                </button>
+                <button class="btn btn-primary" data-ripple onclick="triggerAnimation('wiggle')">
+                    Wiggle
+                </button>
+                <button class="btn btn-primary" data-ripple onclick="triggerAnimation('flip-in-x')">
+                    Flip In
+                </button>
+            </div>
+            <div id="animation-target" style="margin-top: 30px; text-align: center;">
+                <div class="demo-box" style="margin: 0 auto;">Test</div>
+            </div>
+        </section>
+        
+        <!-- Hover Effects -->
+        <section class="section" data-motion="reveal">
+            <h2>🎯 Hover Effects</h2>
+            <p>Berbagai hover effects siap pakai</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card hover-lift">
+                    <h3>Hover Lift</h3>
+                    <p style="color: #8A8680;">Terangkat saat hover</p>
+                </div>
+                <div class="demo-card hover-scale">
+                    <h3>Hover Scale</h3>
+                    <p style="color: #8A8680;">Membesar saat hover</p>
+                </div>
+                <div class="demo-card hover-glow">
+                    <h3>Hover Glow</h3>
+                    <p style="color: #8A8680;">Bercahaya saat hover</p>
+                </div>
+                <div class="demo-card card-hover-effect">
+                    <h3>Combined Effect</h3>
+                    <p style="color: #8A8680;">Efek kombinasi</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Particle Demo -->
+        <section class="section" data-motion="reveal">
+            <h2>✨ Particle System</h2>
+            <p>Sistem partikel interaktif dengan koneksi</p>
+            
+            <div class="particle-demo" data-particles="50" data-particle-color="rgba(255, 255, 255, 0.3)">
+                Particle Background Active
+            </div>
+        </section>
+        
+        <!-- Utilities -->
+        <section class="section" data-motion="reveal">
+            <h2>🛠️ Utility Functions</h2>
+            <p>Fungsi-fungsi berguna untuk animasi</p>
+            
+            <div class="controls">
+                <button class="btn btn-success" data-ripple onclick="FinoraUI.confetti()">
+                    🎉 Confetti Celebration
+                </button>
+                <button class="btn btn-primary" data-ripple onclick="highlightDemo()">
+                    💡 Highlight Element
+                </button>
+            </div>
+            
+            <div id="highlight-target" class="demo-card" style="margin-top: 30px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                <h3>Highlight Target</h3>
+                <p style="color: #8A8680;">Klik tombol di atas untuk highlight box ini</p>
+            </div>
+        </section>
+        
+        <!-- Feature Summary -->
+        <section class="section" data-motion="reveal">
+            <h2>🎉 All Features</h2>
+            <p>Semua fitur animasi yang sudah diimplementasi:</p>
+            
+            <div style="margin-top: 20px;">
+                <span class="feature-badge">Particle System</span>
+                <span class="feature-badge">Ripple Effects</span>
+                <span class="feature-badge">Number Counters</span>
+                <span class="feature-badge">Parallax</span>
+                <span class="feature-badge">Morphing Shapes</span>
+                <span class="feature-badge">Magnetic Hover</span>
+                <span class="feature-badge">Scroll Progress</span>
+                <span class="feature-badge">Page Transitions</span>
+                <span class="feature-badge">Skeleton Loaders</span>
+                <span class="feature-badge">Toast Notifications</span>
+                <span class="feature-badge">Loading Overlay</span>
+                <span class="feature-badge">Progress Bar</span>
+                <span class="feature-badge">Confirmation Dialog</span>
+                <span class="feature-badge">Motion System</span>
+                <span class="feature-badge">Hover Effects</span>
+                <span class="feature-badge">Micro-interactions</span>
+                <span class="feature-badge">30+ CSS Animations</span>
+                <span class="feature-badge">Confetti</span>
+                <span class="feature-badge">Highlight</span>
+                <span class="feature-badge">Floating</span>
+            </div>
+        </section>
+        
+        <div style="text-align: center; padding: 60px 20px; color: #8A8680;">
+            <p style="font-size: 18px; margin-bottom: 10px;">✨ Finora Animation System ✨</p>
+            <p>Maksimal, Keren, dan Ga Ngebosenin!</p>
+        </div>
+    </div>
+    
+    <script src="/js/motion.js"></script>
+    <script src="/js/animations.js"></script>
+    <script src="/js/ui-system.js"></script>
+    
+    <script>
+        // Show loading demo
+        function showLoading() {
+            FinoraUI.loading.show('Memproses data...');
+            setTimeout(() => {
+                FinoraUI.loading.hide();
+                FinoraUI.toast.success('Loading selesai!');
+            }, 3000);
+        }
+        
+        // Show progress demo
+        function showProgress() {
+            FinoraUI.progress.start();
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                FinoraUI.progress.update(progress);
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    FinoraUI.progress.complete();
+                    FinoraUI.toast.success('Progress complete!');
+                }
+            }, 300);
+        }
+        
+        // Show confirmation
+        async function showConfirm() {
+            const result = await FinoraUI.confirm.show(
+                'Apakah kamu suka dengan animasi ini?',
+                {
+                    title: 'Konfirmasi',
+                    confirmText: 'Ya, Suka!',
+                    cancelText: 'Belum'
+                }
+            );
+            
+            if (result) {
+                FinoraUI.toast.success('Yeay! Terima kasih! 🎉');
+                FinoraUI.confetti();
+            } else {
+                FinoraUI.toast.info('Oke, akan kami tingkatkan lagi!');
+            }
+        }
+        
+        // Show danger confirmation
+        async function showDangerConfirm() {
+            const result = await FinoraUI.confirm.show(
+                'Ini contoh konfirmasi berbahaya. Yakin ingin lanjut?',
+                {
+                    title: '⚠️ Peringatan',
+                    confirmText: 'Ya, Lanjutkan',
+                    cancelText: 'Batal',
+                    type: 'danger'
+                }
+            );
+            
+            if (result) {
+                FinoraUI.toast.warning('Action confirmed!');
+            }
+        }
+        
+        // Reset counter
+        function resetCounter() {
+            const counter = document.getElementById('counter1');
+            counter.removeAttribute('data-counted');
+            counter.textContent = '5000000';
+            
+            // Re-observe
+            setTimeout(() => {
+                if (window.FinoraAnimations) {
+                    FinoraAnimations.animateCounter(counter);
+                }
+            }, 100);
+            
+            FinoraUI.toast.info('Counter di-reset! Tunggu animasinya...');
+        }
+        
+        // Trigger animation
+        function triggerAnimation(className) {
+            const target = document.querySelector('#animation-target .demo-box');
+            target.className = 'demo-box ' + className;
+            
+            setTimeout(() => {
+                target.className = 'demo-box';
+            }, 1000);
+        }
+        
+        // Highlight demo
+        function highlightDemo() {
+            const target = document.getElementById('highlight-target');
+            FinoraUI.highlight(target);
+            FinoraUI.toast.info('Element di-highlight!');
+        }
+        
+        // Welcome message
+        setTimeout(() => {
+            FinoraUI.toast.success('Selamat datang di Finora Animation Demo! 🎨');
+        }, 1000);
+    </script>
+</body>
+</html>

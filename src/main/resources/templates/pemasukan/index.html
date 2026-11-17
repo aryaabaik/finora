@@ -10,9 +10,13 @@
     <link rel="stylesheet" th:href="@{/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
     <link rel="stylesheet" th:href="@{/css/pemasukan.css}">
+    <link rel="stylesheet" th:href="@{/css/animations.css}">
+    <link rel="stylesheet" th:href="@{/css/micro-interactions.css}">
 </head>
 
 <body>
+    <!-- Scroll Progress -->
+    <div data-scroll-progress style="position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6B8CAE, #C4A35A); z-index: 99999;"></div>
     <div class="paper-texture"></div>
 
 
@@ -142,6 +146,9 @@
     <script th:src="@{/js/custom-select.js}"></script>
     <script th:src="@{/js/custom-datepicker.js}"></script>
     <script th:src="@{/js/motion.js}"></script>
+    <script th:src="@{/js/animations.js}"></script>
+    <script th:src="@{/js/ui-system.js}"></script>
+    <script th:src="@{/js/ux-enhancer.js}"></script>
     <script>
         let currentParams = { page: 0, size: 10, sort: 'terbaru', category: '', startDate: '', endDate: '' };
         let allCategories = [];

@@ -11,11 +11,21 @@
     <link rel="stylesheet" th:href="@{/dashboard.css}">
     <!-- Responsive Foundation + Navigation -->
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <!-- Advanced Animations -->
+    <link rel="stylesheet" th:href="@{/css/animations.css}">
+    <!-- Micro-interactions -->
+    <link rel="stylesheet" th:href="@{/css/micro-interactions.css}">
 </head>
 
 <body>
+    <!-- Scroll Progress Bar -->
+    <div data-scroll-progress style="position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6B8CAE, #C4A35A); z-index: 99999;"></div>
+    
     <!-- Paper Texture Overlay -->
     <div class="paper-texture"></div>
+    
+    <!-- Particle Background -->
+    <div data-particles="25" data-particle-color="rgba(107, 140, 174, 0.12)" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
 
     <div class="layout">
         <!-- Mobile Header (shown only on mobile/tablet) -->
@@ -45,12 +55,14 @@
                     <div class="profile">
                         <div class="profile-avatar">
                             <img th:if="${user != null and user.foto != null and !user.foto.isEmpty()}"
-                                 th:src="@{'/uploads/profile/' + ${user.foto}}"
+                                 th:src="${user.fotoUrl}"
                                  alt="Profile"
+                                 onerror="this.onerror=null;this.src='/img/default-avatar.svg';"
                                  class="profile-avatar-img" />
-                            <span th:unless="${user != null and user.foto != null and !user.foto.isEmpty()}"
-                                  class="profile-avatar-initial"
-                                  th:text="${#strings.isEmpty(userName) ? 'U' : #strings.toUpperCase(#strings.substring(userName, 0, 1))}">U</span>
+                            <img th:unless="${user != null and user.foto != null and !user.foto.isEmpty()}"
+                                 th:src="@{/img/default-avatar.svg}"
+                                 alt="Foto profil default"
+                                 class="profile-avatar-img" />
                         </div>
                         <div class="profile-info">
                             <strong th:text="${userName} ?: 'User'">User</strong>
@@ -61,8 +73,8 @@
             </header>
 
             <!-- Desktop Hero -->
-            <section class="hero desktop-only" data-motion="enter" data-motion-delay="0">
-                <svg class="botanical-decor" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <section class="hero desktop-only" data-motion="enter" data-motion-delay="0" data-morph data-morph-speed="0.008">
+                <svg class="botanical-decor float-soft" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M60 10 Q65 30 55 50 Q45 70 60 90" stroke="#4A6B8A" stroke-width="1.2" fill="none"/>
                     <path d="M60 20 Q80 35 90 25" stroke="#4A6B8A" stroke-width="1" fill="none"/>
                     <ellipse cx="90" cy="25" rx="8" ry="4" stroke="#4A6B8A" stroke-width="1" fill="none" transform="rotate(-30 90 25)"/>
@@ -74,22 +86,22 @@
                     <ellipse cx="25" cy="75" rx="7" ry="3.5" stroke="#4A6B8A" stroke-width="1" fill="none" transform="rotate(35 25 75)"/>
                 </svg>
 
-                <div class="silhouettes">
-                    <svg width="32" height="52" viewBox="0 0 32 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div class="silhouettes" data-parallax="0.3">
+                    <svg width="32" height="52" viewBox="0 0 32 52" fill="none" xmlns="http://www.w3.org/2000/svg" class="float" style="animation-delay: 0s;">
                         <ellipse cx="16" cy="8" rx="6" ry="7" fill="#243447"/>
                         <path d="M8 18 Q16 15 24 18 L26 42 L20 52 L12 52 L6 42 Z" fill="#243447"/>
                     </svg>
-                    <svg width="32" height="58" viewBox="0 0 32 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="32" height="58" viewBox="0 0 32 58" fill="none" xmlns="http://www.w3.org/2000/svg" class="float" style="animation-delay: 0.5s;">
                         <ellipse cx="16" cy="7" rx="5" ry="6" fill="#1A2332"/>
                         <path d="M9 16 Q16 14 23 16 L25 44 L19 58 L13 58 L7 44 Z" fill="#1A2332"/>
                     </svg>
-                    <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="32" height="50" viewBox="0 0 32 50" fill="none" xmlns="http://www.w3.org/2000/svg" class="float" style="animation-delay: 1s;">
                         <ellipse cx="16" cy="7" rx="5.5" ry="6.5" fill="#243447"/>
                         <path d="M7 17 Q16 14 25 17 L28 40 L22 50 L10 50 L4 40 Z" fill="#243447"/>
                     </svg>
                 </div>
 
-                <svg class="dried-flower" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="dried-flower float-slow" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" data-parallax="0.2">
                     <path d="M16 28 L16 12" stroke="#B8924A" stroke-width="1.5"/>
                     <circle cx="16" cy="10" r="4" stroke="#6B7F59" stroke-width="1.2" fill="none"/>
                     <path d="M12 14 Q8 18 10 22" stroke="#B8924A" stroke-width="1" fill="none"/>
@@ -119,16 +131,20 @@
             <!-- Financial Overview: Balance, Income, Expense in one grid -->
             <div class="financial-overview">
                 <section class="summary-grid">
-                    <div class="summary-card balance" data-motion="enter" data-motion-delay="80">
+                    <div class="summary-card balance hover-lift" data-motion="enter" data-motion-delay="80" data-ripple>
                         <span class="balance-label">Saldo</span>
                         <h2 class="balance-value">
                             <span class="currency">Rp</span>
-                            <span th:text="${#numbers.formatInteger(laporan.saldo ?: 0, 1, 'POINT')}">0</span>
+                            <span data-counter 
+                                  data-counter-duration="1500"
+                                  data-counter-prefix=""
+                                  data-counter-suffix=""
+                                  th:text="${#numbers.formatInteger(laporan.saldo ?: 0, 1, 'POINT')}">0</span>
                         </h2>
                         <p class="balance-description">Saldo saat ini</p>
                     </div>
 
-                    <div class="summary-card income" data-motion="enter" data-motion-delay="120">
+                    <div class="summary-card income hover-lift" data-motion="enter" data-motion-delay="120" data-ripple>
                         <span class="card-label">Pemasukan</span>
                         <h3 class="card-value">
                             <span class="currency">Rp</span>
@@ -137,7 +153,7 @@
                         <p class="card-description">Total pemasukan</p>
                     </div>
 
-                    <div class="summary-card expense" data-motion="enter" data-motion-delay="160">
+                    <div class="summary-card expense hover-lift" data-motion="enter" data-motion-delay="160" data-ripple>
                         <span class="card-label">Pengeluaran</span>
                         <h3 class="card-value">
                             <span class="currency">Rp</span>
@@ -151,7 +167,7 @@
             <!-- Chart + Actions -->
             <div class="dashboard-content-wrapper">
                 <section class="middle-section">
-                    <div class="chart-panel" data-motion="enter" data-motion-delay="220">
+                    <div class="chart-panel hover-lift" data-motion="enter" data-motion-delay="220">
                         <div class="chart-header">
                             <h3 class="chart-title">Financial Flow</h3>
                             <p class="chart-subtitle">Your money, over time.</p>
@@ -173,7 +189,7 @@
                     </div>
 
                     <div class="actions-panel">
-                        <a href="/pemasukan/create" class="action-card" data-motion="enter" data-motion-delay="280">
+                        <a href="/pemasukan/create" class="action-card hover-scale" data-motion="enter" data-motion-delay="280" data-ripple data-magnetic="0.15">
                             <span class="action-icon">+</span>
                             <div class="action-content">
                                 <strong>Tambah Pemasukan</strong>
@@ -181,7 +197,7 @@
                             </div>
                         </a>
 
-                        <a href="/pengeluaran/create" class="action-card expense-action" data-motion="enter" data-motion-delay="320">
+                        <a href="/pengeluaran/create" class="action-card expense-action hover-scale" data-motion="enter" data-motion-delay="320" data-ripple data-magnetic="0.15">
                             <span class="action-icon">−</span>
                             <div class="action-content">
                                 <strong>Tambah Pengeluaran</strong>
@@ -222,6 +238,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script th:src="@{/js/navigation.js}"></script>
     <script th:src="@{/js/motion.js}"></script>
+    <script th:src="@{/js/animations.js}"></script>
+    <script th:src="@{/js/ui-system.js}"></script>
+    <script th:src="@{/js/ux-enhancer.js}"></script>
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var totalPemasukan = [[${laporan.totalPemasukan}]] || 0;

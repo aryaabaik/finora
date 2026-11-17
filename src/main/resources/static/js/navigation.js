@@ -6,6 +6,27 @@
 (function() {
     'use strict';
 
+    // Attach CSRF token automatically to same-origin state-changing fetch requests
+    if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = function(input, init) {
+            const options = init ? Object.assign({}, init) : {};
+            const method = (options.method || (input instanceof Request ? input.method : 'GET')).toUpperCase();
+            if (!['GET', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
+                const csrfEl = document.getElementById('finora-csrf-token');
+                if (csrfEl && csrfEl.value) {
+                    const headerName = csrfEl.getAttribute('data-header') || 'X-CSRF-TOKEN';
+                    const headers = new Headers(options.headers || (input instanceof Request ? input.headers : undefined));
+                    if (!headers.has(headerName)) {
+                        headers.set(headerName, csrfEl.value);
+                    }
+                    options.headers = headers;
+                }
+            }
+            return originalFetch(input, options);
+        };
+    }
+
     const CONFIG = {
         mobileBreakpoint: 768,
         activeClass: 'active',

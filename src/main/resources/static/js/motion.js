@@ -1,5 +1,5 @@
 /**
- * Finora — Global Motion System
+ * Finora — Global Motion System (Enhanced)
  * Handles page entrance, scroll reveals, stagger animations, and micro-interactions
  */
 
@@ -33,6 +33,9 @@
             this.initListStaggers();
             this.initButtonInteractions();
             this.initInputEnhancements();
+            this.initCardAnimations();
+            this.initHoverEffects();
+            this.initGestureAnimations();
         },
 
         detectReducedMotion() {
@@ -194,8 +197,8 @@
         },
 
         initButtonInteractions() {
-            const buttons = document.querySelectorAll('.btn:not(.btn-submit), .action-card');
-            
+            const buttons = document.querySelectorAll('.btn:not(.btn-submit), .action-card, .btn-google');
+
             buttons.forEach(btn => {
                 btn.addEventListener('pointerdown', (e) => {
                     if (!btn.disabled && !btn.classList.contains('is-loading')) {
@@ -229,9 +232,90 @@
             });
         },
 
+        initCardAnimations() {
+            const cards = document.querySelectorAll('.summary-card, .chart-panel, .side-panel, .action-card');
+            
+            cards.forEach((card, index) => {
+                // Add subtle hover transform
+                card.style.transition = 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms ease';
+                
+                card.addEventListener('mouseenter', () => {
+                    if (!card.classList.contains('no-hover')) {
+                        card.style.transform = 'translateY(-4px) scale(1.01)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        },
+
+        initHoverEffects() {
+            // Add shine effect on hover for important elements
+            const importantElements = document.querySelectorAll('.balance-value, .hero-title, .btn-primary');
+            
+            importantElements.forEach(el => {
+                el.addEventListener('mouseenter', function(e) {
+                    const shine = document.createElement('div');
+                    shine.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                        pointer-events: none;
+                        z-index: 1;
+                    `;
+                    
+                    const parent = this.style.position === 'relative' ? this : this.parentElement;
+                    if (parent) {
+                        parent.style.position = 'relative';
+                        parent.style.overflow = 'hidden';
+                        parent.appendChild(shine);
+                        
+                        setTimeout(() => {
+                            shine.style.transition = 'left 600ms ease';
+                            shine.style.left = '100%';
+                        }, 10);
+                        
+                        setTimeout(() => shine.remove(), 650);
+                    }
+                });
+            });
+        },
+
+        initGestureAnimations() {
+            // Add touch feedback for mobile
+            const touchElements = document.querySelectorAll('.btn, .action-card, .summary-card, .nav-item');
+            
+            touchElements.forEach(el => {
+                el.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.97)';
+                }, { passive: true });
+                
+                el.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                }, { passive: true });
+            });
+
+            // Add scroll momentum indicator
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                document.body.classList.add('is-scrolling');
+                
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    document.body.classList.remove('is-scrolling');
+                }, 150);
+            }, { passive: true });
+        },
+
         refresh() {
             this.initScrollReveals();
             this.initListStaggers();
+            this.initCardAnimations();
         }
     };
 

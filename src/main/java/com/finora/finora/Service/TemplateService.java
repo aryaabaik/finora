@@ -11,11 +11,13 @@ import com.finora.finora.Repository.PemasukanRepository;
 import com.finora.finora.Repository.PengeluaranRepository;
 import com.finora.finora.Repository.TemplateRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class TemplateService {
 
     private final TemplateRepository templateRepository;
@@ -39,7 +41,13 @@ public class TemplateService {
     // GET TEMPLATE USER
     // =========================
     public List<Template> getTemplatesByUser(User user) {
-        return templateRepository.findByUser(user);
+        List<Template> templates = templateRepository.findByUser(user);
+        for (Template t : templates) {
+            if (t.getItems() != null) {
+                t.getItems().size();
+            }
+        }
+        return templates;
     }
 
 
@@ -47,7 +55,7 @@ public class TemplateService {
     // GET KATEGORI USER
     // =========================
     public List<Kategori> getKategoriByUser(User user) {
-        return kategoriRepository.findByUserId(user.getId());
+        return kategoriRepository.findAvailableByUserId(user.getId());
     }
 
 
@@ -55,13 +63,18 @@ public class TemplateService {
     // GET TEMPLATE BY ID
     // =========================
     public Template getTemplateById(Long id) {
-        return templateRepository.findById(id).orElse(null);
+        Template template = templateRepository.findById(id).orElse(null);
+        if (template != null && template.getItems() != null) {
+            template.getItems().size();
+        }
+        return template;
     }
 
 
     // =========================
     // SAVE TEMPLATE
     // =========================
+    @Transactional
     public Template saveTemplate(Template template) {
         return templateRepository.save(template);
     }
@@ -70,6 +83,7 @@ public class TemplateService {
     // =========================
     // DELETE TEMPLATE
     // =========================
+    @Transactional
     public void deleteTemplate(Long id) {
         templateRepository.deleteById(id);
     }
@@ -78,6 +92,7 @@ public class TemplateService {
     // =========================
     // CREATE TEMPLATE
     // =========================
+    @Transactional
     public Template createTemplate(Template template, User user) {
 
         template.setUser(user);
@@ -97,6 +112,7 @@ public class TemplateService {
     // =========================
     // GUNAKAN ITEM TEMPLATE
     // =========================
+    @Transactional
     public void gunakanTemplateItem(Long templateId, Long itemId, User user) {
 
         Template template = templateRepository.findById(templateId)
@@ -162,6 +178,7 @@ public class TemplateService {
     // =========================
     // GUNAKAN TEMPLATE
     // =========================
+    @Transactional
     public void gunakanTemplate(Long templateId, User user) {
 
         Template template = templateRepository.findById(templateId)

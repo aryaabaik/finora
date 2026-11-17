@@ -13,10 +13,16 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.nio.file.*;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 @Controller
 public class AuthController {
+    private static final long MAX_PROFILE_PHOTO_SIZE = 10L * 1024 * 1024;
+    private static final Set<String> ALLOWED_PROFILE_PHOTO_TYPES = Set.of(
+            "image/png", "image/jpeg", "image/webp", "image/gif");
+
     private final AuthService authService;
     private final CurrentUserHelper currentUserHelper;
     private final PasswordEncoder passwordEncoder;
@@ -33,7 +39,13 @@ public class AuthController {
             @RequestParam(required = false) String error,
             @RequestParam(required = false) String logout,
             @RequestParam(required = false) String registered) {
-        if (error != null) model.addAttribute("error", "Username atau kata sandi salah.");
+        if (error != null) {
+            if ("google".equals(error)) {
+                model.addAttribute("error", "Akun Google tidak terdaftar atau email tidak terverifikasi.");
+            } else {
+                model.addAttribute("error", "Username atau kata sandi salah.");
+            }
+        }
         if (logout != null) model.addAttribute("message", "Anda telah berhasil keluar dari sesi.");
         if (registered != null) model.addAttribute("success", "Pendaftaran berhasil! Silakan masuk menggunakan akun Anda.");
         return "auth/login";
@@ -54,8 +66,33 @@ public class AuthController {
 
     // REGISTER
     @GetMapping("/register")
-    public String registerPage(Model model) {
-        model.addAttribute("user", new User());
+    public String registerPage(Model model, HttpSession session) {
+        // Check if coming from Google Login with unregistered email
+        String googleEmail = (String) session.getAttribute("googleEmail");
+        String googleName = (String) session.getAttribute("googleName");
+        String googleMessage = (String) session.getAttribute("googleMessage");
+
+        if (googleEmail != null) {
+            // Pre-fill email from Google
+            User user = new User();
+            user.setEmail(googleEmail);
+            if (googleName != null && !googleName.trim().isEmpty()) {
+                user.setFullName(googleName);
+            }
+            model.addAttribute("user", user);
+
+            if (googleMessage != null) {
+                model.addAttribute("message", googleMessage);
+            }
+
+            // Clear session attributes after using them
+            session.removeAttribute("googleEmail");
+            session.removeAttribute("googleName");
+            session.removeAttribute("googleMessage");
+        } else {
+            model.addAttribute("user", new User());
+        }
+
         return "auth/register";
     }
 
@@ -140,9 +177,12 @@ public class AuthController {
             if (photo.isEmpty())
                 throw new RuntimeException("Silakan pilih file gambar terlebih dahulu.");
 
+            if (photo.getSize() > MAX_PROFILE_PHOTO_SIZE)
+                throw new RuntimeException("Ukuran foto maksimal 10 MB.");
+
             String type = photo.getContentType();
-            if (type == null || !type.startsWith("image/"))
-                throw new RuntimeException("File harus berupa gambar (JPG, PNG, WebP, dll).");
+            if (type == null || !ALLOWED_PROFILE_PHOTO_TYPES.contains(type.toLowerCase(Locale.ROOT)))
+                throw new RuntimeException("Format foto harus JPG, PNG, WebP, atau GIF.");
 
             Path folder = Paths.get("uploads/profile");
             Files.createDirectories(folder);

@@ -38,4 +38,9 @@ public class DashboardController {
 
         return "dashboard";
     }
+
+    @GetMapping("/animation-demo")
+    public String animationDemo() {
+        return "animation-demo";
+    }
 }

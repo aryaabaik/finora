@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/animations.css">
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -1018,6 +1019,22 @@
             to { stroke-dashoffset: 0; }
         }
 
+        /* Enhanced hover effects */
+        .btn, .action-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-item:hover {
+            background: rgba(253, 248, 240, 0.72);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 35, 50, 0.08);
+        }
+
+        .dashboard-shell:hover {
+            animation-play-state: paused;
+        }
+
         @keyframes dashboardEnterMobile {
             from {
                 opacity: 0;
@@ -1259,6 +1276,12 @@
     </style>
 </head>
 <body>
+    <!-- Scroll Progress -->
+    <div data-scroll-progress style="position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6B8CAE, #C4A35A); z-index: 99999;"></div>
+    
+    <!-- Particle Background -->
+    <div data-particles="30" data-particle-color="rgba(107, 140, 174, 0.1)" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
+    
     <div class="page">
         <nav class="nav" aria-label="Navigasi utama">
             <div class="container nav-inner">
@@ -1269,9 +1292,9 @@
                 <div class="nav-links">
                     <a href="#features">Fitur</a>
                     <a href="#why">Tentang</a>
-                    <div class="nav-actions">
-                        <a href="/login" class="btn btn-outline">Masuk</a>
-                        <a href="/register" class="btn btn-primary">Daftar Akun</a>
+                        <div class="nav-actions">
+                            <a href="/login" class="btn btn-outline" data-ripple>Masuk</a>
+                            <a href="/register" class="btn btn-primary" data-ripple data-magnetic="0.15">Daftar Akun</a>
                     </div>
                 </div>
             </div>
@@ -1282,17 +1305,17 @@
                 <div class="container hero-grid">
                     <div class="hero-content">
                         <p class="eyebrow reveal" style="--delay: 60ms">Aplikasi Keuangan Pribadi</p>
-                        <h1 class="hero-title reveal" style="--delay: 150ms">Kelola Keuangan<br>Dengan Lebih Mudah,<br><em>Lebih Tenang.</em></h1>
+                        <h1 class="hero-title reveal text-shimmer" style="--delay: 150ms">Kelola Keuangan<br>Dengan Lebih Mudah,<br><em>Lebih Tenang.</em></h1>
                         <p class="hero-copy reveal" style="--delay: 240ms">Finora membantu mencatat pemasukan, pengeluaran, kategori, dan laporan keuangan dalam pengalaman yang sederhana, rapi, dan mudah dipahami.</p>
                         <div class="hero-actions reveal" style="--delay: 330ms">
-                            <a href="/register" class="btn btn-primary">Mulai Sekarang <span class="btn-arrow">→</span></a>
-                            <a href="#features" class="btn btn-outline">Pelajari Fitur</a>
+                            <a href="/register" class="btn btn-primary" data-ripple data-magnetic="0.2">Mulai Sekarang <span class="btn-arrow">→</span></a>
+                            <a href="#features" class="btn btn-outline" data-ripple>Pelajari Fitur</a>
                         </div>
                         <p class="hero-note reveal" style="--delay: 420ms">Dirancang untuk membuat rutinitas mencatat keuangan terasa lebih ringan.</p>
                     </div>
 
-                    <div class="dashboard-stage" aria-label="Preview dashboard Finora">
-                        <div class="dashboard-shell">
+                    <div class="dashboard-stage" aria-label="Preview dashboard Finora" data-parallax="0.1">
+                        <div class="dashboard-shell" data-morph data-morph-speed="0.005">
                             <div class="dash-topbar">
                                 <div class="dash-user"><span class="dash-avatar">F</span><span>Dashboard Finora</span></div>
                                 <div class="dash-tabs"><span></span><span></span><span></span></div>
@@ -1360,10 +1383,10 @@
                         <p class="section-copy">Kelola pemasukan, pengeluaran, kategori, dan laporan tanpa berpindah-pindah alat. Setiap fitur dibuat untuk membantu keputusan finansial sehari-hari terasa lebih jelas.</p>
                     </div>
                     <div class="feature-grid">
-                        <article class="feature-item reveal"><span class="feature-number">01</span><h3>Pemasukan</h3><p>Catat uang masuk dengan detail tanggal, jumlah, kategori, dan keterangan.</p></article>
-                        <article class="feature-item reveal"><span class="feature-number">02</span><h3>Pengeluaran</h3><p>Pantau uang keluar agar pola belanja lebih mudah dipahami.</p></article>
-                        <article class="feature-item reveal"><span class="feature-number">03</span><h3>Kategori</h3><p>Kelompokkan transaksi supaya catatan tetap rapi dan mudah dibaca.</p></article>
-                        <article class="feature-item reveal"><span class="feature-number">04</span><h3>Laporan</h3><p>Lihat ringkasan keuangan untuk memahami kondisi saldo secara jelas.</p></article>
+                        <article class="feature-item reveal hover-lift" data-ripple><span class="feature-number">01</span><h3>Pemasukan</h3><p>Catat uang masuk dengan detail tanggal, jumlah, kategori, dan keterangan.</p></article>
+                        <article class="feature-item reveal hover-lift" data-ripple><span class="feature-number">02</span><h3>Pengeluaran</h3><p>Pantau uang keluar agar pola belanja lebih mudah dipahami.</p></article>
+                        <article class="feature-item reveal hover-lift" data-ripple><span class="feature-number">03</span><h3>Kategori</h3><p>Kelompokkan transaksi supaya catatan tetap rapi dan mudah dibaca.</p></article>
+                        <article class="feature-item reveal hover-lift" data-ripple><span class="feature-number">04</span><h3>Laporan</h3><p>Lihat ringkasan keuangan untuk memahami kondisi saldo secara jelas.</p></article>
                     </div>
                 </div>
             </section>
@@ -1416,7 +1439,7 @@
                         <h2>Kelola keuanganmu sekarang,<br>wujudkan tujuanmu nanti.</h2>
                         <p>Mulai dari satu catatan kecil hari ini.</p>
                     </div>
-                    <a href="/register" class="btn btn-primary">Daftar Akun <span class="btn-arrow">→</span></a>
+                    <a href="/register" class="btn btn-primary" data-ripple data-magnetic="0.2">Daftar Akun <span class="btn-arrow">→</span></a>
                 </div>
             </section>
         </main>
@@ -1437,6 +1460,8 @@
         </footer>
     </div>
 
+    <script src="/js/animations.js"></script>
+    <script src="/js/ux-enhancer.js"></script>
     <script>
         (function() {
             var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

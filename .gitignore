@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Finora secrets - JANGAN COMMIT ###
+.env
+*.env
+run-with-oauth.ps1
+application-local.properties
+application-local.yml

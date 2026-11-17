@@ -270,6 +270,12 @@
     white-space: nowrap;
 }
 
+.photo-selected-preview.is-error {
+    color: var(--danger, #B03A3A);
+    background: rgba(176, 58, 58, 0.08);
+    border-color: rgba(176, 58, 58, 0.35);
+}
+
 .btn-submit-photo {
     display: none;
     align-items: center;

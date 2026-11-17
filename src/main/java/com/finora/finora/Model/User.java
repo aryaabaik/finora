@@ -39,6 +39,17 @@ public class User {
 
     private String foto;
 
+    @Transient
+    public String getFotoUrl() {
+        if (foto == null || foto.isBlank()) {
+            return null;
+        }
+        if (foto.startsWith("https://") || foto.startsWith("http://")) {
+            return foto;
+        }
+        return "/uploads/profile/" + foto;
+    }
+
     @PrePersist
     @PreUpdate
     public void onCreate() {

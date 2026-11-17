@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional(readOnly = true)
 public class PengeluaranService {
 
     private final PengeluaranRepository pengeluaranRepository;
@@ -30,6 +32,7 @@ public class PengeluaranService {
         this.pemasukanRepository = pemasukanRepository;
     }
 
+    @Transactional
     public Pengeluaran save(Pengeluaran pengeluaran) {
 
         Long userId = pengeluaran.getUser().getId();
@@ -108,6 +111,7 @@ public class PengeluaranService {
                 );
     }
 
+    @Transactional
     public void deleteById(Long id) {
         pengeluaranRepository.deleteById(id);
     }

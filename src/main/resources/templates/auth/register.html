@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -7,98 +7,137 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Register — Finora</title>
+    <title>Daftar — Finora</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" th:href="@{/css/auth.css?v=6}">
+    <link rel="stylesheet" th:href="@{/css/auth.css?v=8}">
 </head>
 
 <body>
 
-    <div class="auth-card">
-        <div class="auth-card-header">
-            <a th:href="@{/login}" class="back-link">
-                <svg class="back-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
-                </svg>
-                Back
-            </a>
-            <div class="header-logo">
-                <img th:src="@{/img/finora-logo.svg}" alt="Finora" />
+    <div class="login-split">
+        <div class="login-panel login-panel--brand">
+            <div class="brand-bg-orb brand-bg-orb--1"></div>
+            <div class="brand-bg-orb brand-bg-orb--2"></div>
+            <div class="brand-bg-orb brand-bg-orb--3"></div>
+
+            <div class="brand-content">
+                <div class="brand-logo-wrap">
+                    <img th:src="@{/img/finora-logo.svg}" alt="Finora Logo" class="brand-logo-img" />
+                </div>
+                <div class="brand-wordmark">Finora</div>
+                <div class="brand-tagline-wrap">
+                    <span class="brand-tag-line">Financial Journal</span>
+                    <span class="brand-tag-divider">·</span>
+                    <span class="brand-tag-line">Analytics</span>
+                </div>
+                <p class="brand-description">
+                    Kelola keuangan Anda dengan lebih cerdas.<br>
+                    Catat, analisis, dan raih keseimbangan finansial.
+                </p>
+
+                <div class="brand-stats">
+                    <div class="brand-stat">
+                        <span class="brand-stat-value">100%</span>
+                        <span class="brand-stat-label">Privasi</span>
+                    </div>
+                    <div class="brand-stat-divider"></div>
+                    <div class="brand-stat">
+                        <span class="brand-stat-value">Real-time</span>
+                        <span class="brand-stat-label">Laporan</span>
+                    </div>
+                    <div class="brand-stat-divider"></div>
+                    <div class="brand-stat">
+                        <span class="brand-stat-value">Multi</span>
+                        <span class="brand-stat-label">Kategori</span>
+                    </div>
+                </div>
             </div>
-            <span class="header-brand-name">Finora</span>
+
+            <div class="brand-footer-quote">"Setiap angka memiliki cerita."</div>
         </div>
 
-        <div class="auth-card-body">
-            <p class="eyebrow">Sign Up</p>
-            <h1 class="form-title">Create your account</h1>
-            <p class="form-subtitle">Set up your Finora account and start keeping your finances organized.</p>
+        <div class="login-panel login-panel--form">
+            <div class="form-panel-inner">
+                <div class="form-eyebrow">
+                    <span class="form-eyebrow-dot"></span>
+                    BUAT AKUN ANDA
+                </div>
+                <h1 class="form-heading">Daftar ke <em>Finora</em></h1>
+                <p class="form-subheading">Mulai perjalanan keuangan Anda dengan lebih teratur.</p>
 
-            <!-- Error Notification -->
-            <div th:if="${error}" class="alert-box alert-error">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                <span th:text="${error}">An error occurred during registration.</span>
-            </div>
+                <div th:if="${error}" class="alert-box alert-error">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span th:text="${error}">Terjadi kesalahan saat mendaftar.</span>
+                </div>
 
-            <!-- Form -->
+                <div th:if="${message}" class="alert-box alert-info">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span th:text="${message}">Informasi.</span>
+                </div>
+
             <form th:action="@{/register}" th:object="${user}" method="post" class="auth-form">
                 <div class="form-section">
-                    <p class="section-label">Personal</p>
+                    <p class="section-label">Data Pribadi</p>
                     <div class="auth-field">
                         <div class="auth-field-enter">
-                            <label for="fullName">Full Name</label>
+                            <label for="fullName">Nama Lengkap</label>
                             <div class="input-wrapper">
                                 <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
-                                <input type="text" id="fullName" th:field="*{fullName}" placeholder="Enter your full name" required autofocus />
+                                <input type="text" id="fullName" th:field="*{fullName}" placeholder="Masukkan nama lengkap" required autofocus />
                             </div>
                         </div>
                     </div>
 
                     <div class="auth-field">
                         <div class="auth-field-enter">
-                            <label for="username">Username</label>
+                            <label for="username">Nama Pengguna</label>
                             <div class="input-wrapper">
                                 <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="4"></circle>
                                     <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
                                 </svg>
-                                <input type="text" id="username" th:field="*{username}" placeholder="Choose a unique username" required />
+                                <input type="text" id="username" th:field="*{username}" placeholder="Pilih nama pengguna" required />
                             </div>
                         </div>
                     </div>
 
                     <div class="auth-field">
                         <div class="auth-field-enter">
-                            <label for="email">Email Address</label>
+                            <label for="email">Alamat Email</label>
                             <div class="input-wrapper">
                                 <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
-                                <input type="email" id="email" th:field="*{email}" placeholder="example@domain.com" required />
+                                <input type="email" id="email" th:field="*{email}" placeholder="contoh@domain.com" required />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <p class="section-label">Security</p>
+                    <p class="section-label">Keamanan</p>
                     <div class="auth-field">
                         <div class="auth-field-enter">
-                            <label for="password">Password</label>
+                            <label for="password">Kata Sandi</label>
                             <div class="input-wrapper">
                                 <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
-                                <input type="password" id="password" th:field="*{passwordHash}" placeholder="Minimum 6 characters" required minlength="6" />
+                                <input type="password" id="password" th:field="*{passwordHash}" placeholder="Minimal 6 karakter" required minlength="6" />
                                 <button type="button" class="btn-toggle-pwd" aria-label="Toggle password visibility" aria-pressed="false">
                                     <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -115,12 +154,12 @@
 
                     <div class="auth-field">
                         <div class="auth-field-enter">
-                            <label for="confirmPassword">Confirm Password</label>
+                            <label for="confirmPassword">Konfirmasi Kata Sandi</label>
                             <div class="input-wrapper">
                                 <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 2l-2 2m-1.5 1.5L14 9M9 14l-4 4v3h3l4-4m1.5-1.5L16 13"></path>
                                 </svg>
-                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat your password" required minlength="6" />
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Ulangi kata sandi" required minlength="6" />
                                 <button type="button" class="btn-toggle-pwd" aria-label="Toggle password visibility" aria-pressed="false">
                                     <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -137,18 +176,38 @@
                 </div>
 
                 <button type="submit" class="btn-submit">
-                    <span class="btn-text">Create Account</span>
+                    <span class="btn-text">Buat Akun Finora</span>
                     <span class="spinner"></span>
                 </button>
             </form>
 
+            <div class="auth-divider">
+                <span class="divider-line"></span>
+                <span class="divider-text">atau lanjutkan dengan</span>
+                <span class="divider-line"></span>
+            </div>
+
+            <a th:href="@{/oauth2/authorization/google-register}" class="btn-google">
+                <svg class="google-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+                    <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.181l-2.909-2.259c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
+                    <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.55 0 9.001c0 1.452.348 2.827.957 4.041l3.007-2.332z" fill="#FBBC05"/>
+                    <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
+                </svg>
+                <span class="btn-text">Daftar dengan Google</span>
+            </a>
+
             <div class="form-switch-prompt">
-                <span>Already have an account?</span>
-                <a th:href="@{/login}">Login</a>
+                <span>Sudah punya akun?</span>
+                <a th:href="@{/login}">Masuk</a>
+            </div>
             </div>
         </div>
     </div>
 
+    <script src="/js/motion.js"></script>
+    <script src="/js/animations.js"></script>
+    <script src="/js/ux-enhancer.js"></script>
     <script th:src="@{/js/password-toggle.js}"></script>
 </body>
 </html>

@@ -182,13 +182,6 @@ function initializeSectionTransitions() {
         setTimeout(() => {
             if (label) label.classList.add('is-visible');
             section.classList.add('is-visible');
-
-            if (i > 0) {
-                const divider = document.createElement('div');
-                divider.className = 'section-divider';
-                section.parentNode.insertBefore(divider, section);
-                setTimeout(() => divider.classList.add('is-visible'), 50);
-            }
         }, 600 + i * 200);
     });
 }

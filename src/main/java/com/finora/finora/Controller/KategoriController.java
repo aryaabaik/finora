@@ -58,13 +58,29 @@ public class KategoriController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public Kategori getById(@PathVariable Long id) {
-        return kategoriService.getById(id);
+    public Kategori getById(@PathVariable Long id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            throw new RuntimeException("Belum login");
+        }
+        Kategori kategori = kategoriService.getById(id);
+        if (kategori.getUser() == null || !kategori.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Data bukan milik user");
+        }
+        return kategori;
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            throw new RuntimeException("Belum login");
+        }
+        Kategori kategori = kategoriService.getById(id);
+        if (kategori.getUser() == null || !kategori.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Data bukan milik user");
+        }
         kategoriService.deleteById(id);
         return "Kategori berhasil dihapus";
     }

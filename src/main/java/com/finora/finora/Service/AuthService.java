@@ -3,7 +3,7 @@ package com.finora.finora.Service;
 
 import com.finora.finora.Model.User;
 import com.finora.finora.Repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,21 +12,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // REGISTER
     public void register(User user) {
-        if (userRepository.existsByEmail(user.getEmail()))
+        String normalizedEmail = user.getEmail() != null ? user.getEmail().trim() : "";
+        String normalizedUsername = user.getUsername() != null ? user.getUsername().trim() : "";
+
+        if (userRepository.findByEmailIgnoreCase(normalizedEmail).isPresent())
             throw new RuntimeException("Email sudah digunakan.");
 
-        if (userRepository.existsByUsername(user.getUsername()))
+        if (userRepository.existsByUsername(normalizedUsername))
             throw new RuntimeException("Username sudah digunakan.");
 
-        user.setPasswordHash(encoder.encode(user.getPasswordHash()));
+        user.setEmail(normalizedEmail);
+        user.setUsername(normalizedUsername);
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         user.setEnabled(true);
 
         userRepository.save(user);
@@ -52,7 +58,7 @@ public class AuthService {
 
     // GANTI PASSWORD
     public void updatePassword(User user, String newPassword) {
-        user.setPasswordHash(encoder.encode(newPassword));
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 }

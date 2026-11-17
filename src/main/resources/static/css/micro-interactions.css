@@ -1,0 +1,697 @@
+/**
+ * Finora — Micro-Interactions & Smooth Transitions
+ * Enhanced user experience with subtle, delightful animations
+ */
+
+/* ==================== SMOOTH TRANSITIONS BASE ==================== */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    transition: opacity 300ms ease-in-out;
+}
+
+/* ==================== BUTTON ENHANCEMENTS ==================== */
+.btn {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* Button glow on hover */
+.btn-primary:hover::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(circle at center, rgba(107, 140, 174, 0.3), transparent 70%);
+    opacity: 0;
+    transition: opacity 300ms ease;
+    z-index: -1;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.btn-primary:hover::before {
+    opacity: 1;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Button press feedback */
+.btn:active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.1);
+    animation: press-flash 300ms ease-out;
+}
+
+@keyframes press-flash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ==================== CARD INTERACTIONS ==================== */
+.summary-card,
+.chart-panel,
+.action-card {
+    position: relative;
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 300ms ease,
+                background 200ms ease;
+}
+
+/* Card shimmer on load */
+.summary-card::before,
+.chart-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent);
+    animation: card-shimmer 2s ease-in-out;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes card-shimmer {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* Card border glow on hover */
+.summary-card:hover {
+    box-shadow: 0 8px 24px rgba(26, 35, 50, 0.12),
+                0 0 0 1px rgba(107, 140, 174, 0.2);
+}
+
+.summary-card.balance:hover {
+    box-shadow: 0 8px 24px rgba(107, 127, 89, 0.15),
+                0 0 0 1px rgba(107, 127, 89, 0.3);
+}
+
+.summary-card.income:hover {
+    box-shadow: 0 8px 24px rgba(107, 127, 89, 0.12),
+                0 0 0 1px rgba(107, 127, 89, 0.25);
+}
+
+.summary-card.expense:hover {
+    box-shadow: 0 8px 24px rgba(168, 93, 63, 0.12),
+                0 0 0 1px rgba(168, 93, 63, 0.25);
+}
+
+/* ==================== BALANCE VALUE ANIMATION ==================== */
+.balance-value {
+    position: relative;
+    transition: transform 200ms ease;
+}
+
+.balance-value:hover {
+    transform: scale(1.02);
+}
+
+/* Number counter entrance */
+.balance-value span[data-counter] {
+    display: inline-block;
+    animation: number-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes number-pop {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ==================== INPUT FOCUS EFFECTS ==================== */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(107, 140, 174, 0.15);
+    transform: translateY(-1px);
+    transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.is-focused {
+    position: relative;
+}
+
+.is-focused::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, 
+        rgba(107, 140, 174, 0.3),
+        rgba(196, 163, 90, 0.3));
+    opacity: 0;
+    animation: focus-ring 600ms ease-out;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes focus-ring {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+}
+
+/* ==================== NAVIGATION HOVER ==================== */
+.nav-item,
+.sidebar-link {
+    position: relative;
+    transition: color 200ms ease, transform 150ms ease;
+}
+
+.nav-item::before,
+.sidebar-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-item:hover::before,
+.sidebar-link:hover::before,
+.nav-item.active::before,
+.sidebar-link.active::before {
+    width: 100%;
+}
+
+.nav-item:hover,
+.sidebar-link:hover {
+    transform: translateX(2px);
+}
+
+/* ==================== CHART ANIMATIONS ==================== */
+.chart-container canvas {
+    animation: chart-fade-in 800ms ease-out;
+}
+
+@keyframes chart-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chart legend interactions */
+.legend-item {
+    position: relative;
+    transition: transform 150ms ease, opacity 200ms ease;
+    cursor: pointer;
+}
+
+.legend-item:hover {
+    transform: translateX(3px);
+}
+
+.legend-item:active {
+    transform: translateX(3px) scale(0.98);
+}
+
+.legend-item::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width 200ms ease;
+}
+
+.legend-item:hover::after {
+    width: 100%;
+}
+
+/* ==================== PROFILE AVATAR ==================== */
+.profile-avatar,
+.mobile-profile-avatar {
+    position: relative;
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 300ms ease;
+    cursor: pointer;
+}
+
+.profile-avatar:hover,
+.mobile-profile-avatar:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 4px 12px rgba(26, 35, 50, 0.2);
+}
+
+.profile-avatar::after,
+.mobile-profile-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 2px solid rgba(107, 140, 174, 0.3);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 200ms ease, transform 200ms ease;
+    transform: scale(0.9);
+}
+
+.profile-avatar:hover::after,
+.mobile-profile-avatar:hover::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ==================== ACTION CARDS ==================== */
+.action-card {
+    transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 250ms ease,
+                background 200ms ease;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.1), 
+        transparent);
+    opacity: 0;
+    transition: opacity 200ms ease;
+    border-radius: inherit;
+}
+
+.action-card:hover::before {
+    opacity: 1;
+}
+
+.action-card .action-icon {
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.action-card:hover .action-icon {
+    transform: scale(1.2) rotate(90deg);
+}
+
+/* ==================== SCROLL INDICATORS ==================== */
+.is-scrolling {
+    --scroll-indicator-opacity: 1;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        rgba(107, 140, 174, 0.2),
+        rgba(196, 163, 90, 0.2));
+    opacity: var(--scroll-indicator-opacity, 0);
+    transition: opacity 300ms ease;
+    pointer-events: none;
+    z-index: 99998;
+}
+
+/* ==================== LOADING STATES ==================== */
+.is-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.is-loading:not(.btn-submit)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(107, 140, 174, 0.3);
+    border-top-color: #6B8CAE;
+    border-radius: 50%;
+    animation: spin 600ms linear infinite;
+    z-index: 1;
+}
+
+/* ==================== MODAL TRANSITIONS ==================== */
+.profile-modal {
+    transition: opacity 300ms ease, visibility 300ms;
+}
+
+.profile-modal.is-opening .profile-modal-content {
+    animation: modal-zoom-in 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.profile-modal.is-closing .profile-modal-content {
+    animation: modal-zoom-out 300ms ease-out;
+}
+
+@keyframes modal-zoom-in {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes modal-zoom-out {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+}
+
+/* ==================== TOAST NOTIFICATIONS ==================== */
+.toast {
+    animation: toast-slide-in 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toast.removing {
+    animation: toast-slide-out 300ms ease-out;
+}
+
+@keyframes toast-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(100%) translateY(-50%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) translateY(-50%);
+    }
+}
+
+@keyframes toast-slide-out {
+    from {
+        opacity: 1;
+        transform: translateX(0) translateY(-50%);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%) translateY(-50%);
+    }
+}
+
+/* ==================== DRAWER ANIMATIONS ==================== */
+.drawer {
+    transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawer.is-opening {
+    animation: drawer-slide-in 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawer.is-closing {
+    animation: drawer-slide-out 300ms ease-out;
+}
+
+@keyframes drawer-slide-in {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes drawer-slide-out {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+/* ==================== SKELETON PULSE ==================== */
+[data-skeleton] {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ==================== SMOOTH PAGE TRANSITIONS ==================== */
+.page-transition-overlay {
+    position: fixed;
+    inset: 0;
+    background: #FDF8F0;
+    z-index: 99999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+}
+
+.page-transition-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ==================== HOVER MAGNETIC EFFECT ==================== */
+[data-magnetic] {
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==================== DECORATIVE ELEMENTS ==================== */
+.botanical-decor,
+.dried-flower,
+.silhouettes svg {
+    transition: transform 300ms ease, opacity 300ms ease;
+}
+
+.hero:hover .botanical-decor {
+    transform: translateY(-5px) rotate(2deg);
+}
+
+.hero:hover .dried-flower {
+    transform: translateY(-8px) rotate(-3deg);
+}
+
+/* ==================== TEXT SELECTION ==================== */
+::selection {
+    background: rgba(107, 140, 174, 0.3);
+    color: inherit;
+}
+
+::-moz-selection {
+    background: rgba(107, 140, 174, 0.3);
+    color: inherit;
+}
+
+/* ==================== CUSTOM SCROLLBAR ==================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(232, 221, 208, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(107, 140, 174, 0.4);
+    border-radius: 5px;
+    transition: background 200ms ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 140, 174, 0.6);
+}
+
+/* ==================== LINK HOVER EFFECTS ==================== */
+a {
+    transition: color 200ms ease, transform 150ms ease;
+}
+
+a:not(.btn):not(.action-card):hover {
+    color: #6B8CAE;
+}
+
+/* ==================== TABLE ROW INTERACTIONS ==================== */
+tr {
+    transition: background 150ms ease, transform 100ms ease;
+}
+
+tr:hover {
+    background: rgba(232, 221, 208, 0.15);
+    transform: translateX(2px);
+}
+
+/* ==================== FORM VALIDATION FEEDBACK ==================== */
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    animation: shake-error 400ms ease-in-out;
+    border-color: #A85D3F;
+}
+
+@keyframes shake-error {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.form-group.success input,
+.form-group.success select,
+.form-group.success textarea {
+    animation: pulse-success 400ms ease-in-out;
+    border-color: #6B7F59;
+}
+
+@keyframes pulse-success {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(107, 127, 89, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(107, 127, 89, 0);
+    }
+}
+
+/* ==================== CONTEXTUAL ANIMATIONS ==================== */
+.just-added {
+    animation: highlight-flash 1s ease-out;
+}
+
+@keyframes highlight-flash {
+    0%, 100% {
+        background: transparent;
+    }
+    10%, 30% {
+        background: rgba(107, 127, 89, 0.15);
+    }
+}
+
+/* ==================== PERFORMANCE OPTIMIZATIONS ==================== */
+.btn,
+.action-card,
+.summary-card,
+[data-magnetic],
+[data-motion],
+.profile-avatar,
+.legend-item,
+.nav-item {
+    will-change: transform;
+}
+
+/* Remove will-change after interaction */
+.btn:not(:hover),
+.action-card:not(:hover),
+.summary-card:not(:hover) {
+    will-change: auto;
+}
+
+/* ==================== AMBIENT ORBS ==================== */
+.finora-ambient-orbs {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.finora-ambient-orbs span {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    animation: ambient-orb-float 16s ease-in-out infinite;
+}
+
+.finora-ambient-orbs span:nth-child(1) {
+    left: 8%;
+    top: 14%;
+    background: #6B8CAE;
+}
+
+.finora-ambient-orbs span:nth-child(2) {
+    right: 7%;
+    top: 42%;
+    background: #C4A35A;
+    animation-delay: -5s;
+}
+
+.finora-ambient-orbs span:nth-child(3) {
+    left: 38%;
+    bottom: 4%;
+    background: #A87862;
+    animation-delay: -9s;
+}
+
+@keyframes ambient-orb-float {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33% { transform: translate3d(26px, -22px, 0) scale(1.08); }
+    66% { transform: translate3d(-18px, 20px, 0) scale(0.94); }
+}
+
+.layout,
+.main,
+.main-content,
+.auth-card,
+.page {
+    position: relative;
+    z-index: 1;
+}
+
+/* ==================== REDUCED MOTION OVERRIDES ==================== */
+@media (prefers-reduced-motion: reduce) {
+    .finora-ambient-orbs { display: none; }
+}
+
+/* ==================== REDUCED MOTION OVERRIDES ==================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

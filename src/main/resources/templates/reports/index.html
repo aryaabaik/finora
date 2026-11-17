@@ -7,9 +7,13 @@
     <title>Laporan Keuangan - Finora</title>
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
     <link rel="stylesheet" th:href="@{/css/laporan.css}">
+    <link rel="stylesheet" th:href="@{/css/animations.css}">
+    <link rel="stylesheet" th:href="@{/css/micro-interactions.css}">
 </head>
 
 <body>
+    <!-- Scroll Progress -->
+    <div data-scroll-progress style="position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #6B8CAE, #C4A35A); z-index: 99999;"></div>
     <div class="paper-texture"></div>
 
     <div class="layout">
@@ -71,7 +75,7 @@
             </form>
 
             <!-- Summary -->
-            <div class="summary-row">
+            <div class="summary-row" data-motion="enter" data-motion-delay="120">
                 <div class="summary-card" data-motion="enter" data-motion-delay="140">
                     <span class="summary-label">Total Pemasukan</span>
                     <span class="summary-value income">Rp <span th:text="${reportData != null and reportData.totalPemasukan != null ? #numbers.formatInteger(reportData.totalPemasukan, 1, 'POINT') : '0'}">0</span></span>
@@ -107,7 +111,7 @@
             <div class="report-content" th:if="${not #lists.isEmpty(reportData['pemasukan']) or not #lists.isEmpty(reportData['pengeluaran'])}">
 
                 <!-- Arus Keuangan Chart -->
-                <section class="report-section chart-section" data-motion="reveal">
+                <section class="report-section chart-section" data-motion="enter" data-motion-delay="260">
                     <div class="chart-card large-chart">
                         <div class="chart-header">
                             <h3 class="chart-title">Arus Keuangan</h3>
@@ -120,7 +124,7 @@
                 </section>
 
                 <!-- Pengeluaran Kategori + Sumber Pemasukan -->
-                <section class="report-section category-section" data-motion="reveal">
+                <section class="report-section category-section" data-motion="enter" data-motion-delay="320">
                     <div class="two-column-grid">
                         <div class="chart-card">
                             <div class="chart-header">
@@ -169,7 +173,7 @@
                 </section>
 
                 <!-- Insight -->
-                <section class="report-section">
+                <section class="report-section" data-motion="enter" data-motion-delay="380">
                     <div class="insight-card">
                         <div class="chart-header">
                             <h3 class="chart-title">Ringkasan Periode</h3>
@@ -244,7 +248,7 @@
                 </section>
 
                 <!-- Detail Pemasukan -->
-                <section class="report-section">
+                <section class="report-section" data-motion="enter" data-motion-delay="440">
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3 class="chart-title">Detail Pemasukan</h3>
@@ -299,7 +303,7 @@
                 </section>
 
                 <!-- Detail Pengeluaran -->
-                <section class="report-section">
+                <section class="report-section" data-motion="enter" data-motion-delay="500">
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3 class="chart-title">Detail Pengeluaran</h3>
@@ -368,6 +372,9 @@
     <script th:src="@{/js/navigation.js}"></script>
     <script th:src="@{/js/custom-select.js}"></script>
     <script th:src="@{/js/motion.js}"></script>
+    <script th:src="@{/js/animations.js}"></script>
+    <script th:src="@{/js/ui-system.js}"></script>
+    <script th:src="@{/js/ux-enhancer.js}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
         var chartLabels = /*[[${reportData != null and reportData.chartData != null ? reportData.chartData.labels : {}}]]*/ [];
@@ -404,27 +411,27 @@
                 return;
             }
 
-            var pad = { top: 25, right: 20, bottom: 45, left: 65 };
+            var pad = { top: 28, right: 24, bottom: 48, left: 72 };
             var cw = w - pad.left - pad.right;
             var ch = h - pad.top - pad.bottom;
             var allVals = income.concat(expense).concat([100000]);
             var maxVal = Math.ceil(Math.max.apply(null, allVals) / 500000) * 500000 || 1000000;
             var barGroupW = cw / labels.length;
-            var barW = Math.max(6, Math.min(14, barGroupW * 0.28));
+            var barW = Math.max(8, Math.min(18, barGroupW * 0.3));
 
             // Grid lines and Y axis
             for (var i = 0; i <= 4; i++) {
                 var y = pad.top + ch - (ch * i / 4);
-                ctx.strokeStyle = 'rgba(217, 197, 165, 0.4)';
-                ctx.lineWidth = 1;
-                ctx.setLineDash(i === 0 ? [] : [4, 4]);
+                ctx.strokeStyle = i === 0 ? 'rgba(217, 197, 165, 0.5)' : 'rgba(217, 197, 165, 0.28)';
+                ctx.lineWidth = i === 0 ? 1.5 : 1;
+                ctx.setLineDash(i === 0 ? [] : [5, 5]);
                 ctx.beginPath();
                 ctx.moveTo(pad.left, y);
                 ctx.lineTo(w - pad.right, y);
                 ctx.stroke();
 
                 ctx.setLineDash([]);
-                ctx.fillStyle = '#8A8680';
+                ctx.fillStyle = '#9A9690';
                 ctx.font = '500 10.5px Inter, sans-serif';
                 ctx.textAlign = 'right';
                 var valLabel = (maxVal * i / 4);
@@ -441,46 +448,52 @@
 
                 // Income bar
                 if (incH > 0) {
-                    ctx.fillStyle = '#52794A';
+                    var incGrad = ctx.createLinearGradient(0, pad.top + ch - incH, 0, pad.top + ch);
+                    incGrad.addColorStop(0, '#5AB87F');
+                    incGrad.addColorStop(1, '#3A7A58');
+                    ctx.fillStyle = incGrad;
                     ctx.beginPath();
-                    ctx.roundRect(cx - barW - 2, pad.top + ch - incH, barW, incH, [3, 3, 0, 0]);
+                    ctx.roundRect(cx - barW - 2, pad.top + ch - incH, barW, incH, [4, 4, 0, 0]);
                     ctx.fill();
                 }
 
                 // Expense bar
                 if (expH > 0) {
-                    ctx.fillStyle = '#B35436';
+                    var expGrad = ctx.createLinearGradient(0, pad.top + ch - expH, 0, pad.top + ch);
+                    expGrad.addColorStop(0, '#D4725C');
+                    expGrad.addColorStop(1, '#A04A36');
+                    ctx.fillStyle = expGrad;
                     ctx.beginPath();
-                    ctx.roundRect(cx + 2, pad.top + ch - expH, barW, expH, [3, 3, 0, 0]);
+                    ctx.roundRect(cx + 2, pad.top + ch - expH, barW, expH, [4, 4, 0, 0]);
                     ctx.fill();
                 }
 
                 // Month Label
                 ctx.fillStyle = '#1A2332';
-                ctx.font = '500 10.5px Inter, sans-serif';
+                ctx.font = '600 10.5px Inter, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText(label.substring(0, 3), cx, h - pad.bottom + 18);
             });
 
             // Legend on bottom
             var legendY = h - 10;
-            ctx.fillStyle = '#52794A';
+            ctx.fillStyle = '#4A9B6F';
             ctx.beginPath();
-            ctx.arc(pad.left + 6, legendY - 3.5, 4, 0, Math.PI * 2);
+            ctx.roundRect(pad.left, legendY - 8, 14, 8, 3);
             ctx.fill();
             ctx.fillStyle = '#1A2332';
             ctx.font = '600 11px Inter, sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText('Pemasukan', pad.left + 14, legendY);
+            ctx.fillText('Pemasukan', pad.left + 18, legendY);
 
-            ctx.fillStyle = '#B35436';
+            ctx.fillStyle = '#C0614A';
             ctx.beginPath();
-            ctx.arc(pad.left + 110, legendY - 3.5, 4, 0, Math.PI * 2);
+            ctx.roundRect(pad.left + 110, legendY - 8, 14, 8, 3);
             ctx.fill();
             ctx.fillStyle = '#1A2332';
             ctx.font = '600 11px Inter, sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText('Pengeluaran', pad.left + 118, legendY);
+            ctx.fillText('Pengeluaran', pad.left + 128, legendY);
         }
 
         window.addEventListener('load', renderCashFlowChart);

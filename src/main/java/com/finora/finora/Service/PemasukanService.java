@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional(readOnly = true)
 public class PemasukanService {
 
     private final PemasukanRepository pemasukanRepository;
@@ -24,6 +26,7 @@ public class PemasukanService {
         this.pemasukanRepository = pemasukanRepository;
     }
 
+    @Transactional
     public Pemasukan save(Pemasukan pemasukan) {
         return pemasukanRepository.save(pemasukan);
     }
@@ -64,6 +67,7 @@ public class PemasukanService {
                 .orElseThrow(() -> new RuntimeException("Pemasukan tidak ditemukan"));
     }
 
+    @Transactional
     public void delete(Long id) {
         pemasukanRepository.deleteById(id);
     }
